@@ -108,32 +108,34 @@ class Pair(Single):
 
     '''
     key = ''
-    value = None
+    value = []
 
-    def __init__(self, key='', value=None):
+    def __init__(self, key='', *value):
         if key == '':
             self.key = self.__class__.__name__
         else:
             self.key = key
-            self.value = value
+        if len(value) != 0:
+            self.value = list(flatten(value))
 
     def printMe(self, key, value):
         text = '<key>{keyName}</key>\n'.format(keyName=key)
 
-        if value is None:
+        if len(value) == 0:
             return ''
         else:
-            valueText = self.value.printMe(self.value.tag, self.value.value)
+            valueText = ''
+            for single in value:
+                if isinstance(single, Single):
+                    valueText += single.printMe(single.tag, single.value)
+                elif isinstance(single, SingleBool):
+                    valueText += single.printMe(single.scalar)
 
         text += valueText
         return text
 
     def clear(self):
-        self.value = None
-
-    @property
-    def sub(self):
-        return self.value.value
+        self.value = []
 
 
 class BoolPairTemplate(Pair):
@@ -152,7 +154,7 @@ class BoolPairTemplate(Pair):
         This function sets the value of key true.
         '''
         trueBool = SingleBool('true')
-        self.value = trueBool
+        self.value = [trueBool]
 
 
 class SingleStringPairTemplate(Pair):
@@ -166,7 +168,7 @@ class SingleStringPairTemplate(Pair):
 
     def update(self, single):
         self.clear()
-        self.value = single
+        self.value.append(single)
 
     def changeTo(self, label):
         stringSingle = StringSingle(label)
@@ -182,15 +184,17 @@ class ArrayPairTemplate(Pair):
         super().__init__()
         self.add(value)
 
-    def update(self, value):
-        self.value = value
+    def update(self, *value):
+        self.value.append(list(flatten(value)))
 
     def make(self, *value):
         arraySingle = ArraySingle(value)
         return arraySingle
 
-    def add(self, singleUnderArray):
-        self.value.value.append(singleUnderArray)
+    def add(self, single):
+        for valueElement in self.value:
+            valueElement.add(single)
+        self.value.append(ArraySingle)
 
 
 class Label(SingleStringPairTemplate):
@@ -406,9 +410,9 @@ if __name__ == '__main__':
     # pair2 = Pair('mey key', singleSingle)
     # print(pair2.printMe(pair2.key, pair2.value))
 
-    schedule = StartInterval()
-    schedule.every(5).day
-    schedule.every(10).minute
+    # schedule = StartInterval()
+    # schedule.every(5).day
+    # schedule.every(10).minute
     schedule = RunAtLoad()
     print(schedule.key)
     print(schedule.printMe(schedule.key, schedule.value))
