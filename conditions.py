@@ -173,6 +173,10 @@ class SingleStringPairTemplate(Pair):
 
 
 class ArrayPairTemplate(Pair):
+    '''
+    The type of Pair that contains a array single
+    '''
+
     def __init__(self, value):
         super().__init__()
         self.add(value)
@@ -180,8 +184,14 @@ class ArrayPairTemplate(Pair):
     def update(self, *value):
         self.value.append(list(flatten(value)))
 
-    def add(self, *value):
+    def make(self, *value):
         arraySingle = ArraySingle(value)
+        return arraySingle
+
+    def add(self, single):
+        for valueElement in self.value:
+            valueElement.add(single)
+        self.value.append(ArraySingle)
 
 
 class Label(SingleStringPairTemplate):
