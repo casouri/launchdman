@@ -145,7 +145,6 @@ class BoolPairTemplate(Pair):
     def __init__(self):
         super().__init__()
         self.setToTrue()
-        self.initialValueReference = makeReferenceList(self.value)
 
     def setToTrue(self):
         '''
