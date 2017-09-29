@@ -15,6 +15,13 @@ def flatten(l):
             yield el
 
 
+# def makeReferenceList(originList):
+#     referenceList = []
+#     for i in originList:
+#         referenceList.append(i)
+#     return referenceList
+
+
 class SingleBool():
     '''
     A type of Single that only have a single tag.
@@ -89,6 +96,7 @@ class Pair():
     '''
     A type of structure that have <key>Key</key> and it's value.
     By default, value is set to empty.
+    Its value should contain only one single.
     If not provide in init parameter, key is set to subclass name in init.
     Init also accept value in combination of strings
     and lists of strings.
@@ -113,6 +121,8 @@ class Pair():
         else:
             valueText = ''
             for single in value:
+                # may be remove the loop
+                # single = value[0]
                 if isinstance(single, Single):
                     valueText += single.printMe(single.tag, single.value)
                 elif isinstance(single, SingleBool):
@@ -133,19 +143,16 @@ class BoolPairTemplate(Pair):
     '''
 
     def __init__(self):
-        super(BoolPairTemplate, self).__init__()
-        self.true
-
-    def update(self, newValue):
-        self.value.append(newValue)
+        super().__init__()
+        self.setToTrue()
+        self.initialValueReference = makeReferenceList(self.value)
 
     def setToTrue(self):
         '''
         This function sets the value of key true.
         '''
-        if len(self.value) == 0:
-            trueBool = SingleBool('true')
-            self.update(trueBool)
+        trueBool = SingleBool('true')
+        self.value = [trueBool]
 
 
 class SingleStringPairTemplate(Pair):
