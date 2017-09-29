@@ -22,25 +22,11 @@ def flatten(l):
 #     return referenceList
 
 
-class SingleBool():
-    '''
-    A type of Single that only have a single tag.
-    Usually indicate true of false.
-    '''
-    scalar = ''
-
-    def __init__(self, scalar):
-        self.scalar = scalar
-
-    def printMe(self, scalar):
-        text = '</{scalar}>\n'.format(scalar=scalar)
-        return text
-
-
 class Single():
     '''
     A type of structure that only have a tag and it's values.
     At init, tag and value will be set to empty.
+    All subclass must implement printMe(tag, value)
     '''
     tag = ''
     value = []
@@ -65,6 +51,22 @@ class Single():
             return text
 
 
+class SingleBool(Single):
+    '''
+    A type of Single that only have a single tag.
+    The only difference is it prints differently.
+    Usually indicate true of false.
+    '''
+    scalar = ''
+
+    def __init__(self, value):
+        self.value = value
+
+    def printMe(self, tag='', value='true'):
+        text = '</{value}>\n'.format(value=value)
+        return text
+
+
 class TypedSingle(Single):
     '''
     A little sugar so that you don't need to
@@ -72,6 +74,9 @@ class TypedSingle(Single):
     '''
 
     def __init__(self, *value):
+        '''
+        eg. The tag of stringSingle will be string
+        '''
         tag = self.__class__.__name__.replace('Single', '').lower()
         super().__init__(tag, value)
 
@@ -92,7 +97,7 @@ class IntegerSingle(TypedSingle):
     pass
 
 
-class Pair():
+class Pair(Single):
     '''
     A type of structure that have <key>Key</key> and it's value.
     By default, value is set to empty.
@@ -118,18 +123,17 @@ class Pair():
         if value is None:
             return ''
         else:
-            valueText = ''
-            if isinstance(self.value, Single):
-                valueText += self.value.printMe(self.value.tag,
-                                                self.value.value)
-            elif isinstance(self.value, SingleBool):
-                valueText += self.value.printMe(self.value.scalar)
+            valueText = self.value.printMe(self.value.tag, self.value.value)
 
         text += valueText
         return text
 
     def clear(self):
         self.value = None
+
+    @property
+    def sub(self):
+        return self.value.value
 
 
 class BoolPairTemplate(Pair):
