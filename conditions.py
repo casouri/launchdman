@@ -1,5 +1,5 @@
 import textwrap
-import collections
+from collections import namedtuple, Iterable
 
 
 def indent(text, amount, ch=' '):
@@ -8,11 +8,15 @@ def indent(text, amount, ch=' '):
 
 def flatten(l):
     for el in l:
-        if isinstance(
-                el, collections.Iterable) and not isinstance(el, (str, bytes)):
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
             yield from flatten(el)
         else:
             yield el
+
+
+# MARK: working
+def makeReference(l):
+    referenceTuple = ()
 
 
 # def makeReferenceList(originList):
@@ -38,17 +42,43 @@ class Single():
     def printMe(self, tag, value):
         if len(value) == 0:
             return ''
-        elif len(value) == 1:
+        # if value have only one element and it is not another single
+        # print differently
+        elif len(value) == 1 and not isinstance(value[0], Single):
             text = '<{tag}>{value}</{tag}>\n'.format(tag=tag, value=value[0])
             return text
         else:
             valueText = ''
             for single in value:
-                valueText += single.printMe(single.tag, single.value)
+                # if the element is another single
+                # or merely an object
+                # both possibility should not happen in the same time
+                # if so, user is not doing the right thing
+                if isinstance(single, Single):
+                    # ask that single to print itself
+                    valueText += single.printMe(single.tag, single.value)
+                else:
+                    # simply print that element
+                    valueText += str(single) + '\n'
             valueText = indent(valueText, 4)
             text = '<{tag}>\n'.format(
                 tag=tag) + valueText + '</{tag}>\n'.format(tag=tag)
             return text
+
+    def add(self, *value):
+        '''
+        Subclass are responsible of creating whatever single instance it need
+        from its add(*value). And make a list and pass the list to add().
+        '''
+        flattenedValueList = list(flatten(value))
+        self.value += flattenedValueList
+        return (flattenedValueList)
+
+    def remove(self, *toBeRemoved):
+        removeList = list(flatten(toBeRemoved))
+        for valueToRemove in removeList:
+            if removeList in self.value:
+                self.value.remove(valueToRemove)
 
 
 class SingleBool(Single):
@@ -138,7 +168,15 @@ class Pair(Single):
         self.value = []
 
 
-class BoolPairTemplate(Pair):
+class TopLevelPair(Pair):
+    '''
+    only difference is that add and remove action directly
+    on Pair's instance.value, instead of Pair's instance
+    '''
+    pass
+
+
+class BoolPairTemplate(TopLevelPair):
     '''
     A special type of pair that contains it's key and
     only one tag, usually </true> or </false>.
@@ -157,7 +195,7 @@ class BoolPairTemplate(Pair):
         self.value = [trueBool]
 
 
-class SingleStringPairTemplate(Pair):
+class SingleStringPairTemplate(TopLevelPair):
     '''
     Pair that only contain a key and a string single.
     '''
@@ -175,7 +213,7 @@ class SingleStringPairTemplate(Pair):
         self.update(stringSingle)
 
 
-class ArrayPairTemplate(Pair):
+class ArrayPairTemplate(TopLevelPair):
     '''
     The type of Pair that contains a array single
     '''
@@ -255,7 +293,7 @@ class RunAtLoad(BoolPairTemplate):
     pass
 
 
-class StartInterval(Pair):
+class StartInterval(TopLevelPair):
     baseNumber = 1
     magnification = 1
     key = 'StartInterval'
