@@ -14,9 +14,13 @@ def flatten(l):
             yield el
 
 
-# MARK: working
-def makeReference(l):
-    referenceTuple = ()
+def removeeverything(toBeRemoved, l):
+    successful = True
+    while successful:
+        try:
+            l.remove(toBeRemoved)
+        except:
+            successful = False
 
 
 # def makeReferenceList(originList):
@@ -34,6 +38,11 @@ class Single():
     '''
     tag = ''
     value = []
+
+    def __eq__(self, other):
+        # return self.printMe(self.tag, self.value) == other.printMe(
+        #     other.tag, other.value)
+        return set(self.findAll()) == set(other.findAll())
 
     def __init__(self, tag, *value):
         self.tag = tag
@@ -65,6 +74,24 @@ class Single():
                 tag=tag) + valueText + '</{tag}>\n'.format(tag=tag)
             return text
 
+    def findAll(self):
+        resultList = []
+        for element in self.value:
+            if isinstance(element, Single):
+                resultList += element.findAll()
+            else:
+                resultList.append(element)
+        return resultList
+
+    def findAllSingle(self):
+        resultList = []
+        for element in self.value:
+            if isinstance(element, Single):
+                resultList.append(element)
+                resultList += element.findAllSingle()
+        return resultList
+
+    # MARK: working
     def add(self, *value):
         '''
         Subclass are responsible of creating whatever single instance it need
@@ -74,11 +101,21 @@ class Single():
         self.value += flattenedValueList
         return (flattenedValueList)
 
-    def remove(self, *toBeRemoved):
-        removeList = list(flatten(toBeRemoved))
-        for valueToRemove in removeList:
-            if removeList in self.value:
-                self.value.remove(valueToRemove)
+    def remove(self, *l):
+        '''
+        only looks inside current instance's value, not recursive.
+        There is no need for a recursive one anyway.
+        '''
+        removeList = list(flatten(l))
+        # for valueToRemove in removeList:
+        #     for currentValue in self.value:
+        #         print(valueToRemove == currentValue)
+        #         if valueToRemove == currentValue:
+        #             self.value.remove(currentValue)
+        #             print('current value\t', self.value)
+        for removeValue in removeList:
+            # self.value.remove(removeValue)
+            removeeverything(removeValue, self.value)
 
 
 class SingleBool(Single):
