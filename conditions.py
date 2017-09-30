@@ -151,11 +151,11 @@ class ArraySingle(TypedSingle):
     pass
 
 
-class DictSingle(Pair):
-    key = 'Dict'
-
-    def add(self, *value):
-        pass
+class DictSingle(TypedSingle):
+    '''
+    No difference from array but with a tag named dict
+    and should contain only pair instance.
+    '''
 
 
 class IntegerSingle(TypedSingle):
@@ -166,10 +166,6 @@ class Pair(Single):
     '''
     A type of structure that have <key>Key</key> and it's value.
     By default, value is set to empty.
-    Its value should contain only one single.
-    If not provide in init parameter, key is set to subclass name in init.
-    Init also accept value in combination of strings
-    and lists of strings.
 
     '''
     key = ''
@@ -204,6 +200,10 @@ class TopLevelPair(Pair):
     '''
     only difference is that add and remove action directly
     on Pair's instance.value, instead of Pair's instance
+    Its value should contain only one single.
+    If not provide in init parameter, key is set to subclass name in init.
+    Init also accept value in combination of strings
+    and lists of strings.
     '''
     pass
 
