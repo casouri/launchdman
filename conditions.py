@@ -91,7 +91,6 @@ class Single():
                 resultList += element.findAllSingle()
         return resultList
 
-    # MARK: working
     def add(self, *value):
         '''
         Subclass are responsible of creating whatever single instance it need
@@ -107,15 +106,11 @@ class Single():
         There is no need for a recursive one anyway.
         '''
         removeList = list(flatten(l))
-        # for valueToRemove in removeList:
-        #     for currentValue in self.value:
-        #         print(valueToRemove == currentValue)
-        #         if valueToRemove == currentValue:
-        #             self.value.remove(currentValue)
-        #             print('current value\t', self.value)
         for removeValue in removeList:
-            # self.value.remove(removeValue)
             removeeverything(removeValue, self.value)
+
+    def clear(self):
+        self.value = []
 
 
 class SingleBool(Single):
@@ -156,8 +151,11 @@ class ArraySingle(TypedSingle):
     pass
 
 
-class DictSingle(TypedSingle):
-    pass
+class DictSingle(Pair):
+    key = 'Dict'
+
+    def add(self, *value):
+        pass
 
 
 class IntegerSingle(TypedSingle):
@@ -200,9 +198,6 @@ class Pair(Single):
 
         text += valueText
         return text
-
-    def clear(self):
-        self.value = []
 
 
 class TopLevelPair(Pair):
