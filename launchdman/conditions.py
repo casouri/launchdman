@@ -14,6 +14,14 @@ def flatten(l):
             yield el
 
 
+def ancestor(obj):
+    return list(obj.__class__.__mro__)[-2]
+
+
+def ancestorJr(obj):
+    return list(obj.__class__.__mro__)[-3]
+
+
 def removeEverything(toBeRemoved, l):
     successful = True
     while successful:
@@ -53,23 +61,26 @@ class Single():
             return ''
         # if value have only one element and it is not another single
         # print differently
-        elif len(selfValue) == 1 and not isinstance(selfValue[0], Single):
+        elif len(selfValue) == 1 and not ancestor(selfValue[0]) is Single:
             text = '<{tag}>{value}</{tag}>\n'.format(
                 tag=selfTag, value=selfValue[0])
             return text
         else:
             valueText = ''
-            for single in selfValue:
+            for element in selfValue:
                 # if the element is another single
                 # or merely an object
                 # both possibility should not happen in the same time
                 # if so, user is not doing the right thing
-                if isinstance(single, Single):
+                if ancestor(
+                        element) is Single and not ancestorJr(element) is Pair:
                     # ask that single to print itself
-                    valueText += single.printMe(single.tag, single.value)
+                    valueText += element.printMe(element.tag, element.value)
+                elif ancestorJr(element) is Pair:
+                    valueText += element.printMe(element.key, element.value)
                 else:
                     # simply print that element
-                    valueText += str(single) + '\n'
+                    valueText += str(element) + '\n'
             valueText = indent(valueText, 4)
             text = '<{tag}>\n'.format(
                 tag=selfTag) + valueText + '</{tag}>\n'.format(tag=selfTag)
@@ -210,11 +221,12 @@ class Pair(Single):
             return ''
         else:
             valueText = ''
-            for single in selfValue:
-                if isinstance(single, Single):
-                    valueText += single.printMe(single.tag, single.value)
-                elif isinstance(single, SingleBool):
-                    valueText += single.printMe(single.scalar)
+            for element in selfValue:
+                if isinstance(element, Single):
+                    valueText += element.printMe(element.tag, element.value)
+                elif isinstance(element, Pair):
+                    valueText += element.printMe(element.key, element.value)
+                    # MARK: working: should add a else statement
 
         text += valueText
         return text
@@ -246,30 +258,27 @@ class CoverPair(Pair):
         super()._remove(removeList, self.value[0].value)
 
 
-class SingleValuePairTemplate(Pair):
+class SingleValuePair(Pair):
     '''
     Pair that only contain a key and a single which contain only one value.
     subclass have to implement changeTo method
     '''
 
-    def __init__(self, key='', value=None):
+    def __init__(self):
         super().__init__()
-        self.changeTo(value)
 
     def changeTo(self, value):
         raise AttributeError(
-            'sub-class of "SingleValuePairTemplate" should implement different "changeTo" method'
+            'sub-class of "SingleValuePair" class should implement different "changeTo" method'
         )
 
     def add(self):
         '''no add method'''
-        raise AttributeError(
-            '"SingleStringPairTemplate" class has no method "add"')
+        raise AttributeError('"SingleStringPair" class has no method "add"')
 
     def remove(self):
         '''no remove method'''
-        raise AttributeError(
-            '"SingleStringPairTemplate" class has no method "remove"')
+        raise AttributeError('"SingleStringPair" class has no method "remove"')
 
 
 class BoolPairTemplate(Pair):
@@ -291,14 +300,14 @@ class BoolPairTemplate(Pair):
         self.value = [trueBool]
 
 
-class Label(SingleValuePairTemplate):
+class Label(SingleValuePair):
     def changeTo(self, label):
         '''change string single to label'''
         stringSingle = StringSingle(label)
         self.value = [stringSingle]
 
 
-class Program(SingleValuePairTemplate):
+class Program(SingleValuePair):
     def changeTo(self, label):
         '''change string single to label'''
         stringSingle = StringSingle(label)
@@ -319,10 +328,18 @@ class ProgramArguments(CoverPair):
         arraySingle = ArraySingle(stringList)
         self.value = [arraySingle]
 
+    def add(self, argument):
+        self.value[0].add(StringSingle(argument))
 
-class EnvironmentVariables(CoverPair):
-    def __init__(self, *dictList):
-        dictList = list(flatten(dictList))
+
+class EnvironmentVariables(SingleValuePair):
+    def __init__(self, path):
+        super().__init__()
+        self.changeTo(path)
+
+    def changeTo(self, path):
+        dictionary = DictSingle(Pair('PATH', StringSingle(path)))
+        self.value = [dictionary]
 
 
 class StandardInPath():

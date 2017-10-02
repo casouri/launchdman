@@ -1,0 +1,80 @@
+* launchd classes
+
+
+** Label | SingleValuePairTemplate
+
+*** init(label)
+    key is set to Label because there is no key argument
+    changeTo method is called with label
+*** changeTo(value)
+    value is string
+    change self.value to [StirngSingle]
+
+** Program | SingleValuePairTemplate
+*** init(label)
+    key is set to Program because there is no key argument
+    changeTo method is called with label
+    
+*** changeTo(value)
+    value is string
+    change self.value to [StirngSingle]
+
+** ProgramArguments | CoverPair
+*** init(*l)
+    key is set to ProgramArguments because there is no key argument
+    take a string or a list of string or a bunch of strings,
+    which goes into self.value[0](<ArraySingle>
+*** add(argument)
+    add argument as StringSingle into ArraySingle
+
+** EnvironmentVariables
+*** init(*dictList)
+    
+- StandardInPath
+- 
+- StandardOutPath
+- 
+- StandardErrorPath
+- 
+- WorkingDirectory
+- 
+- SoftResourceLimit
+- 
+- HardResourceLimit
+- 
+- RunAtLoad
+- 
+- StartInterval
+- 
+- StartCalendarInterval
+- 
+- StartOnMount
+- 
+- WatchPath
+- 
+- QueueDirecotries
+- 
+- KeepAlive
+- 
+- UserName
+- 
+- GroupName
+- 
+- InitGroups
+- 
+- Umask
+- 
+- RootDirecotry
+- 
+- AbandonProcessGroup
+- 
+- ExitTimeOut
+- 
+- Timeout
+- 
+- ThrottleInverval
+- 
+- LegacyTimers
+- 
+- Nice
+- 
