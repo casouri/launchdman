@@ -1,10 +1,10 @@
 * launchd classes
 
 
-** Label | SingleValuePairTemplate
+** Label | SingleValuePair
 
 *** init(label)
-    key is set to Label because there is no key argument
+    key is set to subclass name because there is no key argument
     changeTo method is called with label
 *** changeTo(value)
     value is string
@@ -28,7 +28,8 @@
     add argument as StringSingle into ArraySingle
 
 ** EnvironmentVariables
-*** init(*dictList)
+*** init(path)
+    takes a path<str> as path
     
 - StandardInPath
 - 
@@ -78,3 +79,4 @@
 - 
 - Nice
 - 
+  

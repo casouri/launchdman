@@ -3,6 +3,18 @@ from collections import Iterable
 
 
 def indent(text, amount, ch=' '):
+    '''take test and indent every line by amount characters
+
+    :param text: text to be indented
+    :type text: str
+    :param amount: number of times indent character is repeated
+    :type amount: int
+    :param ch: the indent character, default as space
+    :type ch: str
+    :returns: a indented string
+    :rtype: str
+
+    '''
     return textwrap.indent(text, amount * ch)
 
 
@@ -293,7 +305,18 @@ class SingleValuePair(Pair):
         raise AttributeError('"SingleStringPair" class has no method "remove"')
 
 
-class BoolPairTemplate(Pair):
+class SingleStringPair(SingleValuePair):
+    def __init__(self, string):
+        super().__init__()
+        self.changeTo(string)
+
+    def changeTo(self, newString):
+        '''change string single to newString'''
+        stringSingle = StringSingle(newString)
+        self.value = [stringSingle]
+
+
+class BoolPair(Pair):
     '''
     A special type of pair that contains it's key and
     only one tag, usually </true> or </false>.
@@ -312,18 +335,12 @@ class BoolPairTemplate(Pair):
         self.value = [trueBool]
 
 
-class Label(SingleValuePair):
-    def changeTo(self, label):
-        '''change string single to label'''
-        stringSingle = StringSingle(label)
-        self.value = [stringSingle]
+class Label(SingleStringPair):
+    pass
 
 
-class Program(SingleValuePair):
-    def changeTo(self, label):
-        '''change string single to label'''
-        stringSingle = StringSingle(label)
-        self.value = [stringSingle]
+class Program(SingleStringPair):
+    pass
 
 
 class ProgramArguments(CoverPair):
@@ -354,19 +371,16 @@ class EnvironmentVariables(SingleValuePair):
         self.value = [dictionary]
 
 
-class StandardInPath():
-    def update(self):
-        pass
+class StandardInPath(SingleStringPair):
+    pass
 
 
-class StandardOutPath():
-    def update(self):
-        pass
+class StandardOutPath(SingleStringPair):
+    pass
 
 
-class StandardErrorPath():
-    def update(self):
-        pass
+class StandardErrorPath(SingleStringPair):
+    pass
 
 
 class WorkingDirectory():
