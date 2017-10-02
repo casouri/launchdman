@@ -1,5 +1,5 @@
 import textwrap
-from collections import namedtuple, Iterable
+from collections import Iterable
 
 
 def indent(text, amount, ch=' '):
@@ -14,7 +14,7 @@ def flatten(l):
             yield el
 
 
-def removeeverything(toBeRemoved, l):
+def removeEverything(toBeRemoved, l):
     successful = True
     while successful:
         try:
@@ -42,23 +42,24 @@ class Single():
     def __eq__(self, other):
         # return self.printMe(self.tag, self.value) == other.printMe(
         #     other.tag, other.value)
-        return set(self.findAll()) == set(other.findAll())
+        return set(self.findAll(self.value)) == set(other.findAll(other.value))
 
     def __init__(self, tag, *value):
         self.tag = tag
         self.value = list(flatten(value))
 
-    def printMe(self, tag, value):
-        if len(value) == 0:
+    def printMe(self, selfTag, selfValue):
+        if len(selfValue) == 0:
             return ''
         # if value have only one element and it is not another single
         # print differently
-        elif len(value) == 1 and not isinstance(value[0], Single):
-            text = '<{tag}>{value}</{tag}>\n'.format(tag=tag, value=value[0])
+        elif len(selfValue) == 1 and not isinstance(selfValue[0], Single):
+            text = '<{tag}>{value}</{tag}>\n'.format(
+                tag=selfTag, value=selfValue[0])
             return text
         else:
             valueText = ''
-            for single in value:
+            for single in selfValue:
                 # if the element is another single
                 # or merely an object
                 # both possibility should not happen in the same time
@@ -71,43 +72,65 @@ class Single():
                     valueText += str(single) + '\n'
             valueText = indent(valueText, 4)
             text = '<{tag}>\n'.format(
-                tag=tag) + valueText + '</{tag}>\n'.format(tag=tag)
+                tag=selfTag) + valueText + '</{tag}>\n'.format(tag=selfTag)
             return text
 
-    def findAll(self):
+    def findAll(self, selfValue):
+        '''
+        takes in self.value as l
+        '''
         resultList = []
-        for element in self.value:
+        for element in selfValue:
             if isinstance(element, Single):
                 resultList += element.findAll()
             else:
                 resultList.append(element)
         return resultList
 
-    def findAllSingle(self):
+    def findAllSingle(self, selfValue):
+        '''
+        takes in self.value as value
+        '''
         resultList = []
-        for element in self.value:
+        for element in selfValue:
             if isinstance(element, Single):
                 resultList.append(element)
                 resultList += element.findAllSingle()
         return resultList
 
-    def add(self, *value):
+    def _add(self, value, selfValue):
         '''
         Subclass are responsible of creating whatever single instance it need
         from its add(*value). And make a list and pass the list to add().
         '''
+        selfValue += value
+        return (value)
+
+    def add(self, *value):
+        '''
+        Subclass are responsible of creating whatever single instance it need
+        from its add(*value).
+        This is a public mask of _add.
+        '''
         flattenedValueList = list(flatten(value))
-        self.value += flattenedValueList
-        return (flattenedValueList)
+        return self._add(flattenedValueList, self.value)
+
+    def _remove(self, removeList, selfValue):
+        '''
+        only looks inside current instance's value, not recursive.
+        There is no need for a recursive one anyway.
+        '''
+        for removeValue in removeList:
+            removeEverything(removeValue, selfValue)
 
     def remove(self, *l):
         '''
         only looks inside current instance's value, not recursive.
         There is no need for a recursive one anyway.
+        public mask of _remove
         '''
         removeList = list(flatten(l))
-        for removeValue in removeList:
-            removeeverything(removeValue, self.value)
+        self._remove(removeList, self.value)
 
     def clear(self):
         self.value = []
@@ -124,8 +147,8 @@ class SingleBool(Single):
     def __init__(self, value):
         self.value = value
 
-    def printMe(self, tag='', value='true'):
-        text = '</{value}>\n'.format(value=value)
+    def printMe(self, selfTag='', selfValue='true'):
+        text = '</{value}>\n'.format(value=selfValue)
         return text
 
 
@@ -156,6 +179,7 @@ class DictSingle(TypedSingle):
     No difference from array but with a tag named dict
     and should contain only pair instance.
     '''
+    pass
 
 
 class IntegerSingle(TypedSingle):
@@ -179,14 +203,14 @@ class Pair(Single):
         if len(value) != 0:
             self.value = list(flatten(value))
 
-    def printMe(self, key, value):
-        text = '<key>{keyName}</key>\n'.format(keyName=key)
+    def printMe(self, selfKey, selfValue):
+        text = '<key>{keyName}</key>\n'.format(keyName=selfKey)
 
-        if len(value) == 0:
+        if len(selfValue) == 0:
             return ''
         else:
             valueText = ''
-            for single in value:
+            for single in selfValue:
                 if isinstance(single, Single):
                     valueText += single.printMe(single.tag, single.value)
                 elif isinstance(single, SingleBool):
@@ -196,19 +220,59 @@ class Pair(Single):
         return text
 
 
-class TopLevelPair(Pair):
+class CoverPair(Pair):
     '''
+    pair that have a array or dict as value.
+    Then it make sense to let add and remove act on that array/dict's value
+    instead of instance.value.
     only difference is that add and remove action directly
-    on Pair's instance.value, instead of Pair's instance
+    on Pair's instance.value.value, instead of Pair's instance.value
     Its value should contain only one single.
-    If not provide in init parameter, key is set to subclass name in init.
-    Init also accept value in combination of strings
-    and lists of strings.
     '''
-    pass
+
+    def add(self, *value):
+        '''
+        add to self.value.value
+        '''
+        flattenedValueList = list(flatten(value))
+        super()._add(flattenedValueList, self.value[0].value)
+        return (flattenedValueList)
+
+    def remove(self, *l):
+        '''
+        remove from self.value.value
+        '''
+        removeList = list(flatten(l))
+        super()._remove(removeList, self.value[0].value)
 
 
-class BoolPairTemplate(TopLevelPair):
+class SingleValuePairTemplate(Pair):
+    '''
+    Pair that only contain a key and a single which contain only one value.
+    subclass have to implement changeTo method
+    '''
+
+    def __init__(self, key='', value=None):
+        super().__init__()
+        self.changeTo(value)
+
+    def changeTo(self, value):
+        raise AttributeError(
+            'sub-class of "SingleValuePairTemplate" should implement different "changeTo" method'
+        )
+
+    def add(self):
+        '''no add method'''
+        raise AttributeError(
+            '"SingleStringPairTemplate" class has no method "add"')
+
+    def remove(self):
+        '''no remove method'''
+        raise AttributeError(
+            '"SingleStringPairTemplate" class has no method "remove"')
+
+
+class BoolPairTemplate(Pair):
     '''
     A special type of pair that contains it's key and
     only one tag, usually </true> or </false>.
@@ -227,62 +291,38 @@ class BoolPairTemplate(TopLevelPair):
         self.value = [trueBool]
 
 
-class SingleStringPairTemplate(TopLevelPair):
-    '''
-    Pair that only contain a key and a string single.
-    '''
-
-    def __init__(self, label):
-        super().__init__()
-        self.changeTo(label)
-
-    def update(self, single):
-        self.clear()
-        self.value.append(single)
-
+class Label(SingleValuePairTemplate):
     def changeTo(self, label):
+        '''change string single to label'''
         stringSingle = StringSingle(label)
-        self.update(stringSingle)
+        self.value = [stringSingle]
 
 
-class ArrayPairTemplate(TopLevelPair):
+class Program(SingleValuePairTemplate):
+    def changeTo(self, label):
+        '''change string single to label'''
+        stringSingle = StringSingle(label)
+        self.value = [stringSingle]
+
+
+class ProgramArguments(CoverPair):
     '''
-    The type of Pair that contains a array single
+    takes a list of strings or a single string
     '''
 
-    def __init__(self, value):
+    def __init__(self, *l):
         super().__init__()
-        self.add(value)
-
-    def update(self, *value):
-        self.value.append(list(flatten(value)))
-
-    def make(self, *value):
-        arraySingle = ArraySingle(value)
-        return arraySingle
-
-    def add(self, single):
-        for valueElement in self.value:
-            valueElement.add(single)
-        self.value.append(ArraySingle)
+        stringList = []
+        for string in list(flatten(l)):
+            stringSingle = StringSingle(string)
+            stringList.append(stringSingle)
+        arraySingle = ArraySingle(stringList)
+        self.value = [arraySingle]
 
 
-class Label(SingleStringPairTemplate):
-    pass
-
-
-class Program(SingleStringPairTemplate):
-    pass
-
-
-class ProgramArguments():
-    def update(self):
-        pass
-
-
-class EnvironmentVariables():
-    def update(self):
-        pass
+class EnvironmentVariables(CoverPair):
+    def __init__(self, *dictList):
+        dictList = list(flatten(dictList))
 
 
 class StandardInPath():
@@ -325,7 +365,7 @@ class RunAtLoad(BoolPairTemplate):
     pass
 
 
-class StartInterval(TopLevelPair):
+class StartInterval(CoverPair):
     baseNumber = 1
     magnification = 1
     key = 'StartInterval'
@@ -337,7 +377,7 @@ class StartInterval(TopLevelPair):
         self.baseNumber = baseNumber
         return self
 
-    def update(self, baseNumber, magnification):
+    def _update(self, baseNumber, magnification):
         schedule = baseNumber * magnification
         integerSingle = Single('integer', schedule)
         if len(self.value) != 0:
@@ -347,34 +387,31 @@ class StartInterval(TopLevelPair):
     @property
     def second(self):
         self.magnification = 1
-        self.update(self.baseNumber, self.magnification)
+        self._update(self.baseNumber, self.magnification)
 
     @property
     def minute(self):
         self.magnification = 60
-        self.update(self.baseNumber, self.magnification)
+        self._update(self.baseNumber, self.magnification)
 
     @property
     def hour(self):
         self.magnification = 3600
-        self.update(self.baseNumber, self.magnification)
+        self._update(self.baseNumber, self.magnification)
 
     @property
     def day(self):
         self.magnification = 86400
-        self.update(self.baseNumber, self.magnification)
+        self._update(self.baseNumber, self.magnification)
 
     @property
     def week(self):
         self.magnification = 345600
-        self.update(self.baseNumber, self.magnification)
+        self._update(self.baseNumber, self.magnification)
 
 
 class StartCalendarInterval():
     def __init__(self):
-        pass
-
-    def update(self):
         pass
 
 
