@@ -22,6 +22,19 @@ def ancestorJr(obj):
     return list(obj.__class__.__mro__)[-3]
 
 
+def singleOrPair(obj):
+    if len(list(obj.__class__.__mro__)) <= 2:
+        raise AttributeError(
+            'Not enough super class. Are you sure this is either a instance of Single or Pair?'
+        )
+    else:
+        # Pair check comes first for Pair is a subclass of Single
+        if ancestorJr(obj) is Pair:
+            return 'Pair'
+        elif ancestor(obj) is Single:
+            return 'Single'
+
+
 def removeEverything(toBeRemoved, l):
     successful = True
     while successful:
@@ -72,11 +85,10 @@ class Single():
                 # or merely an object
                 # both possibility should not happen in the same time
                 # if so, user is not doing the right thing
-                if ancestor(
-                        element) is Single and not ancestorJr(element) is Pair:
+                if singleOrPair(element) == 'Single':
                     # ask that single to print itself
                     valueText += element.printMe(element.tag, element.value)
-                elif ancestorJr(element) is Pair:
+                elif singleOrPair(element) == 'Pair':
                     valueText += element.printMe(element.key, element.value)
                 else:
                     # simply print that element
@@ -222,9 +234,9 @@ class Pair(Single):
         else:
             valueText = ''
             for element in selfValue:
-                if isinstance(element, Single):
+                if singleOrPair(element) == 'Single':
                     valueText += element.printMe(element.tag, element.value)
-                elif isinstance(element, Pair):
+                elif singleOrPair(element) == 'Pair':
                     valueText += element.printMe(element.key, element.value)
                     # MARK: working: should add a else statement
 
