@@ -404,7 +404,7 @@ class HardResourceLimit():
         pass
 
 
-class RunAtLoad(BoolPairTemplate):
+class RunAtLoad(BoolPair):
     pass
 
 
