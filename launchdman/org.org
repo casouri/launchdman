@@ -26,6 +26,7 @@
 *** clear()
     set self.value to empty
 ** BoolSingle | Single
+   
 ** TypedSingle | Single
 ** StringSingle | TypedSingle
 ** ArraySingle | TypedSingle
