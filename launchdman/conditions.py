@@ -81,6 +81,9 @@ class Single():
         self.tag = tag
         self.value = list(flatten(value))
 
+    def parse(self):
+        self.printMe(self.tag, self.value)
+
     def printMe(self, selfTag, selfValue):
         if len(selfValue) == 0:
             return ''
@@ -171,7 +174,7 @@ class Single():
         self.value = []
 
 
-class SingleBool(Single):
+class BoolSingle(Single):
     '''
     A type of Single that only have a single tag.
     The only difference is it prints differently.
@@ -331,7 +334,7 @@ class BoolPair(Pair):
         '''
         This function sets the value of key true.
         '''
-        trueBool = SingleBool('true')
+        trueBool = BoolSingle('true')
         self.value = [trueBool]
 
 
@@ -383,9 +386,8 @@ class StandardErrorPath(SingleStringPair):
     pass
 
 
-class WorkingDirectory():
-    def update(self):
-        pass
+class WorkingDirectory(SingleStringPair):
+    pass
 
 
 class SoftResourceLimit():

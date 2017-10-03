@@ -1,7 +1,45 @@
+* Abustruct classes
+** Single
+*** init(tag, *value)
+    set self.tag to tag, turn value into a list and set to self.value
+*** parse()
+    just a wrapper for printMe() 
+    returns parsed text for luanchd
+*** printMe(selfTag, selfValue)
+    parse with selfTag and selfValue recusively
+    self.tag self.value is normally what to pass in
+*** findAll(selfValue)
+    returns all not-singles inside selfValue
+*** findAllSingles(selfValue)
+    returns all singles inside selfValue
+*** _add(value, selfValue)
+    value: list
+    selValue: list
+    add value to selfvalue
+*** add(*value)
+    calls add and add value to self.value
+*** _remove(removeList, selfValue)
+    remove all matching elements from selfValue
+    by matching with every elements in removeList
+*** remove(*removeList)
+    calls _remove and remove every matching element in self.value
+*** clear()
+    set self.value to empty
+** BoolSingle | Single
+** TypedSingle | Single
+** StringSingle | TypedSingle
+** ArraySingle | TypedSingle
+** DictSingle | TypedSingle
+
+** Pair | Single
+** BoolPair | Pair
+** SingleValuePair | Pair
+** CoverPair | Pair
+** SingleStringPair | SingleValuePair
+
 * launchd classes
 
-
-** Label | SingleValuePair
+** Label | SingleStringPair
 
 *** init(label)
     key is set to subclass name because there is no key argument
@@ -10,7 +48,7 @@
     value is string
     change self.value to [StirngSingle]
 
-** Program | SingleValuePairTemplate
+** Program | SingleStringPair
 *** init(label)
     key is set to Program because there is no key argument
     changeTo method is called with label
@@ -27,7 +65,7 @@
 *** add(argument)
     add argument as StringSingle into ArraySingle
 
-** EnvironmentVariables
+** EnvironmentVariables | SingleStringPair
 *** init(path)
     takes a path<str> as path
     
@@ -80,3 +118,6 @@
 - Nice
 - 
   
+** StandardInPath | SingleStringPair
+** StandardOutPath | SingleStringPair
+** StandardErrorPath | SingleStringPair
