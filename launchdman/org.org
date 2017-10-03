@@ -98,6 +98,13 @@ parse dict into self.value
 *** remove(dic)
 remove matching in self.value
    
+** ArrayOfStringPair | Pair
+*** init(list)
+    list: a list of strings
+*** add(list)
+    list: a list of strings
+*** remove(list)
+    list: a list of strings
 * launchd classes
 
 ** Label | SingleStringPair
@@ -118,14 +125,13 @@ remove matching in self.value
     value is string
     change self.value to [StirngSingle]
 
-** ProgramArguments | CoverPair
-*** init(*l)
-    key is set to ProgramArguments because there is no key argument
-    take a string or a list of string or a bunch of strings,
-    which goes into self.value[0](<ArraySingle>
-*** add(argument)
-    add argument as StringSingle into ArraySingle
-
+** ProgramArguments | ArrayOfStringPair
+*** init(list)
+    list: a list of strings
+*** add(list)
+    list: a list of strings
+*** remove(list)
+    list: a list of strings
 ** EnvironmentVariables | SingleStringPair
 *** init(path)
     takes a path<str> as path
@@ -209,8 +215,8 @@ schedule.add(genMix(month=(4,6,3,8), day=tuple(range(1, 21, 2))
 schedule = StartCalendarInterval()
 schedule.add(genMix(month=(3,8),day=(1,10)
 #+END_SRC
-** StartOnMount
-** WatchPath
+** StartOnMount | BoolPair
+** WatchPath | ArrayOfStringPair
 ** QueueDirecotries
 ** KeepAlive
 ** UserName

@@ -341,6 +341,26 @@ class SingleStringPair(Pair):
         self.value = [stringSingle]
 
 
+class ArrayOfStringPair(Pair):
+    '''
+    Pair that contains a array single which contains a bunch of string single
+    '''
+
+    def __init__(self, *l):
+        super().__init__()
+        self.value = [ArraySingle()]
+        self.l = self.value[0].value
+        self.add(l)
+
+    def add(self, *l):
+        for string in list(flatten(l)):
+            self.l.append(StringSingle(string))
+
+    def remove(self, *l):
+        for string in list(flatten(l)):
+            self._remove(StringSingle(string), self.l)
+
+
 class BoolPair(Pair):
     '''
     A special type of pair that contains it's key and
@@ -397,22 +417,8 @@ class Program(SingleStringPair):
     pass
 
 
-class ProgramArguments(Pair):
-    '''
-    takes a list of strings or a single string
-    '''
-
-    def __init__(self, *l):
-        super().__init__()
-        stringList = []
-        for string in list(flatten(l)):
-            stringSingle = StringSingle(string)
-            stringList.append(stringSingle)
-        arraySingle = ArraySingle(stringList)
-        self.value = [arraySingle]
-
-    def add(self, argument):
-        self.value[0].add(StringSingle(argument))
+class ProgramArguments(ArrayOfStringPair):
+    pass
 
 
 class EnvironmentVariables(Pair):
@@ -610,11 +616,11 @@ class StartCalendarInterval(Pair):
         return crossCombine(grandList)
 
 
-class StartOnMount():
+class StartOnMount(BoolPair):
     pass
 
 
-class WatchPath():
+class WatchPath(ArrayOfStringPair):
     pass
 
 
