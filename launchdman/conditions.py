@@ -2,6 +2,11 @@ import textwrap
 from collections import Iterable
 
 
+def checkKey(key, keyList):
+    if key not in keyList:
+        raise AttributeError('"{}" is not a valid key'.format(key))
+
+
 def indent(text, amount, ch=' '):
     '''take test and indent every line by amount characters
 
@@ -330,8 +335,9 @@ class SingleDictPair(Pair):
 
     def add(self, dic):
         for kw in dic:
-            if kw not in self.keyWord:
-                raise AttributeError('key word "{}" not valid'.format(kw))
+            # if kw not in self.keyWord:
+            #     raise AttributeError('key word "{}" not valid'.format(kw))
+            checkKey(kw, self.keyWord)
             self.dicValue.append(Pair(kw, StringSingle(dic[kw])))
 
     def remove(self, dic):
@@ -399,7 +405,7 @@ class SoftResourceLimit(SingleDictPair):
     ]
 
 
-class HardResourceLimit():
+class HardResourceLimit(SingleDictPair):
     keyWord = [
         'CPU', 'FileSize', 'NumberOfFiles', 'Core', 'Data', 'MemoryLock',
         'NumberOfProcesses', 'ResidentSetSize', 'Stack'
@@ -424,7 +430,6 @@ class StartInterval(Pair):
     def _update(self, baseNumber, magnification):
         interval = int(baseNumber * magnification)
         self.value = [IntegerSingle(interval)]
-        print(self.value)
 
     @property
     def second(self):
@@ -452,9 +457,49 @@ class StartInterval(Pair):
         self._update(self.baseNumber, self.magnification)
 
 
-class StartCalendarInterval():
-    def __init__(self):
-        pass
+class StartCalendarInterval(Pair):
+    keyWord = ['Month', 'Day', 'Weekday', 'Hour', 'Minute']
+
+    def __init__(self, *dic):
+        super().__init__()
+        self.value = [ArraySingle()]
+        self.l = self.value[0]
+
+    def add(self, *dic):
+        dicList = list(flatten(dic))
+        for d in dicList:
+            checkKey(d, self.keyWord)
+            self.l.append(Pair(d, dicList[d]))
+
+    def remove(self, *dic):
+        dicList = list(flatten(dic))
+        for d in dicList:
+            self._remove([Pair(d, dicList[d])], self.l)
+
+    def gen(self, month=0, day=0, week=0, weekday=0, hour=0, minute=0):
+        dic = {
+            'Month': month,
+            'Day': day,
+            'Week': week,
+            'Weekday': weekday,
+            'Day': day,
+            'Minute': minute
+        }
+        dic = {k: v for k, v in dic.iteritems() if v != 0}
+        self.add(dic)
+
+    #MARK: bookmark
+    def rm(self, month=0, day=0, week=0, weekday=0, hour=0, minute=0):
+        dic = {
+            'Month': month,
+            'Day': day,
+            'Week': week,
+            'Weekday': weekday,
+            'Day': day,
+            'Minute': minute
+        }
+        dic = {k: v for k, v in dic.iteritems() if v != 0}
+        self.add(dic)
 
 
 class StartOnMount():

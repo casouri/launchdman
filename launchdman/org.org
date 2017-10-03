@@ -134,10 +134,55 @@ remove matching in self.value
 ** WorkingDirectory
 ** StandardErrorPath | SingleStringPair
 ** SoftResourceLimit | SingleDictPair
-** HardResourceLimit
+*** init(dic)
+dic: dict
+super init set key,
+self.dicValue is self.value[0].value
+parse dict into self.value
+
+*** add(dic)
+parse dict into self.value
+
+*** remove(dic)
+remove matching in self.value
+** HardResourceLimit | SingleDictPair
+*** init(dic)
+dic: dict
+super init set key,
+self.dicValue is self.value[0].value
+parse dict into self.value
+
+*** add(dic)
+parse dict into self.value
+
+*** remove(dic)
+remove matching in self.value
 ** RunAtLoad
-** StartInterval
-** StartCalendarInterval
+*** init()
+    set tag to subclass name, value to empty
+    then call setToTrue(), which set value to list contain
+    a true BoolSingle
+*** setToTrue()
+    set self.value to [BoolSingle('true')]
+*** setToFalse()
+    set value to false
+** StartInterval | Pair
+*** init()
+*** every(num)
+    num: int
+*** second, minute, hour, week, day
+*** example use
+#+BEGIN_SRC python
+schedule = StartInterval()
+schedule.every(10).minute
+#+END_SRC
+** StartCalendarInterval | Pair
+*** init(list)
+list: list of dict
+*** add(*dic)
+dic: dict e.g.:{'Hour':1, 'Minute':10}
+*** remove(*dic)
+dic: dict e.g.:{'Hour':1, 'Minute':10}
 ** StartOnMount
 ** WatchPath
 ** QueueDirecotries
