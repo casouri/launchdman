@@ -36,9 +36,7 @@ def ancestorJr(obj):
 
 def singleOrPair(obj):
     if len(list(obj.__class__.__mro__)) <= 2:
-        raise AttributeError(
-            'Not enough super class. Are you sure this is either a instance of Single or Pair?'
-        )
+        return 'neither'
     else:
         # Pair check comes first for Pair is a subclass of Single
         if ancestorJr(obj) is Pair:
@@ -51,6 +49,8 @@ def removeEverything(toBeRemoved, l):
     successful = True
     while successful:
         try:
+            # list.remove will remove item if equal,
+            # which is evaluated by __eq__
             l.remove(toBeRemoved)
         except:
             successful = False
@@ -159,6 +159,7 @@ class Single():
         There is no need for a recursive one anyway.
         '''
         for removeValue in removeList:
+            # if removeValue equal to selfValue, remove
             removeEverything(removeValue, selfValue)
 
     def remove(self, *l):
@@ -237,7 +238,7 @@ class Pair(Single):
             self.value = list(flatten(value))
 
     def parse(self):
-        self.printMe(self.key, self.value)
+        return self.printMe(self.key, self.value)
 
     def printMe(self, selfKey, selfValue):
         text = '<key>{keyName}</key>\n'.format(keyName=selfKey)
@@ -251,7 +252,7 @@ class Pair(Single):
                     valueText += element.printMe(element.tag, element.value)
                 elif singleOrPair(element) == 'Pair':
                     valueText += element.printMe(element.key, element.value)
-                    # MARK: working: should add a else statement
+                # maybe a else statement for non single non pair?
 
         text += valueText
         return text
@@ -262,51 +263,26 @@ class CoverPair(Pair):
     pair that have a array or dict as value.
     Then it make sense to let add and remove act on that array/dict's value
     instead of instance.value.
-    only difference is that add and remove action directly
-    on Pair's instance.value.value, instead of Pair's instance.value
     Its value should contain only one single.
     '''
 
-    def add(self, *value):
-        '''
-        add to self.value.value
-        '''
-        flattenedValueList = list(flatten(value))
-        super()._add(flattenedValueList, self.value[0].value)
-        return (flattenedValueList)
+    # def add(self, *value):
+    #     '''
+    #     add to self.value.value
+    #     '''
+    #     flattenedValueList = list(flatten(value))
+    #     super()._add(flattenedValueList, self.value[0].value)
+    #     return (flattenedValueList)
 
-    def remove(self, *l):
-        '''
-        remove from self.value.value
-        '''
-        removeList = list(flatten(l))
-        super()._remove(removeList, self.value[0].value)
-
-
-class SingleValuePair(Pair):
-    '''
-    Pair that only contain a key and a single which contain only one value.
-    subclass have to implement changeTo method
-    '''
-
-    def __init__(self):
-        super().__init__()
-
-    def changeTo(self, value):
-        raise AttributeError(
-            'sub-class of "SingleValuePair" class should implement different "changeTo" method'
-        )
-
-    def add(self):
-        '''no add method'''
-        raise AttributeError('"SingleStringPair" class has no method "add"')
-
-    def remove(self):
-        '''no remove method'''
-        raise AttributeError('"SingleStringPair" class has no method "remove"')
+    # def remove(self, *l):
+    #     '''
+    #     remove from self.value.value
+    #     '''
+    #     removeList = list(flatten(l))
+    #     super()._remove(removeList, self.value[0].value)
 
 
-class SingleStringPair(SingleValuePair):
+class SingleStringPair(Pair):
     def __init__(self, string):
         super().__init__()
         self.changeTo(string)
@@ -341,6 +317,29 @@ class BoolPair(Pair):
         self.value = [BoolSingle('false')]
 
 
+class SingleDictPair(Pair):
+    '''
+    Pair that contains one DictSingle in its value
+    '''
+
+    def __init__(self, dic):
+        super().__init__()
+        self.value = [DictSingle()]
+        self.dicValue = self.value[0].value
+        self.add(dic)
+
+    def add(self, dic):
+        for kw in dic:
+            if kw not in self.keyWord:
+                raise AttributeError('key word "{}" not valid'.format(kw))
+            self.dicValue.append(Pair(kw, StringSingle(dic[kw])))
+
+    def remove(self, dic):
+        for kw in dic:
+            removePair = Pair(kw, dic[kw])
+            self._remove([removePair])
+
+
 class Label(SingleStringPair):
     pass
 
@@ -349,7 +348,7 @@ class Program(SingleStringPair):
     pass
 
 
-class ProgramArguments(CoverPair):
+class ProgramArguments(Pair):
     '''
     takes a list of strings or a single string
     '''
@@ -367,7 +366,7 @@ class ProgramArguments(CoverPair):
         self.value[0].add(StringSingle(argument))
 
 
-class EnvironmentVariables(SingleValuePair):
+class EnvironmentVariables(Pair):
     def __init__(self, path):
         super().__init__()
         self.changeTo(path)
@@ -393,44 +392,39 @@ class WorkingDirectory(SingleStringPair):
     pass
 
 
-class SoftResourceLimit():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class SoftResourceLimit(SingleDictPair):
+    keyWord = [
+        'CPU', 'FileSize', 'NumberOfFiles', 'Core', 'Data', 'MemoryLock',
+        'NumberOfProcesses', 'ResidentSetSize', 'Stack'
+    ]
 
 
 class HardResourceLimit():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+    keyWord = [
+        'CPU', 'FileSize', 'NumberOfFiles', 'Core', 'Data', 'MemoryLock',
+        'NumberOfProcesses', 'ResidentSetSize', 'Stack'
+    ]
 
 
 class RunAtLoad(BoolPair):
     pass
 
 
-class StartInterval(CoverPair):
+class StartInterval(Pair):
     baseNumber = 1
     magnification = 1
-    key = 'StartInterval'
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def every(self, baseNumber):
         self.baseNumber = baseNumber
         return self
 
     def _update(self, baseNumber, magnification):
-        schedule = baseNumber * magnification
-        integerSingle = Single('integer', schedule)
-        if len(self.value) != 0:
-            self.value = []
-        self.value.append(integerSingle)
+        interval = int(baseNumber * magnification)
+        self.value = [IntegerSingle(interval)]
+        print(self.value)
 
     @property
     def second(self):

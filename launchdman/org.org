@@ -22,9 +22,12 @@
 *** add(*value)
     calls add and add value to self.value
 *** _remove(removeList, selfValue)
+    removeList: list of Single or Pair
     remove all matching elements from selfValue
     by matching with every elements in removeList
 *** remove(*removeList)
+    removeList: list of Single or Pair
+    to be overwrited by subclass
     calls _remove and remove every matching element in self.value
 *** clear()
     set self.value to empty
@@ -65,14 +68,14 @@ pair that contains a single BoolSingle
     set self.value to [BoolSingle('true')]
 *** setToFalse()
     set value to false
-** SingleValuePair | Pair
+** SingleValuePair | Pair | not used
    add and remove method raises error
 *** init()
     self.key to subclass name, self.value to empty
     probably to be overwrited
 *** changeTo(value)
     change value to something, must be overwrited
-** CoverPair | Pair
+** CoverPair | Pair | not used
    add and remove method act on its value[0]
 ** SingleStringPair | SingleValuePair
 *** init(string)
@@ -81,6 +84,20 @@ pair that contains a single BoolSingle
 *** changTo(newString)
     newString<str>
 
+** SingleDictPair | Pair
+   subclass must have a keyWord property
+*** init(dic)
+dic: dict
+super init set key,
+self.dicValue is self.value[0].value
+parse dict into self.value
+
+*** add(dic)
+parse dict into self.value
+
+*** remove(dic)
+remove matching in self.value
+   
 * launchd classes
 
 ** Label | SingleStringPair
@@ -112,58 +129,30 @@ pair that contains a single BoolSingle
 ** EnvironmentVariables | SingleStringPair
 *** init(path)
     takes a path<str> as path
-    
-- StandardInPath
-- 
-- StandardOutPath
-- 
-- StandardErrorPath
-- 
-- WorkingDirectory
-- 
-- SoftResourceLimit
-- 
-- HardResourceLimit
-- 
-- RunAtLoad
-- 
-- StartInterval
-- 
-- StartCalendarInterval
-- 
-- StartOnMount
-- 
-- WatchPath
-- 
-- QueueDirecotries
-- 
-- KeepAlive
-- 
-- UserName
-- 
-- GroupName
-- 
-- InitGroups
-- 
-- Umask
-- 
-- RootDirecotry
-- 
-- AbandonProcessGroup
-- 
-- ExitTimeOut
-- 
-- Timeout
-- 
-- ThrottleInverval
-- 
-- LegacyTimers
-- 
-- Nice
-- 
-  
 ** StandardInPath | SingleStringPair
 ** StandardOutPath | SingleStringPair
+** WorkingDirectory
 ** StandardErrorPath | SingleStringPair
-** SoftResourceLimit | CoverPair
-   
+** SoftResourceLimit | SingleDictPair
+** HardResourceLimit
+** RunAtLoad
+** StartInterval
+** StartCalendarInterval
+** StartOnMount
+** WatchPath
+** QueueDirecotries
+** KeepAlive
+** UserName
+** GroupName
+** InitGroups
+** Umask
+** RootDirecotry
+** AbandonProcessGroup
+** ExitTimeOut
+** Timeout
+** ThrottleInverval
+** LegacyTimers
+** Nice
+
+* Note
+remove method could be expensive
