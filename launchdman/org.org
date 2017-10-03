@@ -193,6 +193,22 @@ schedule.add(gen(day=1) # every first day of month
 schedule.remove(gen(day=1) # remove the schedule
 schedule.add(gen(day=1),gen(day=15)) # every first day and the mid month
 #+END_SRC
+*** genMix(month=(), day=(), week=(), weekday=(), hour=(), minute=())
+    arg: tuple of int
+    Just like gen(), this function generates stuff to be passed into add().
+    It generates a list of functions so you can do basically any calendar schedule you want
+    e.g.: every two days from 1st to 21st in March, April, June and August
+#+BEGIN_SRC python
+schedule = StartCalendarInterval()
+schedule.add(genMix(month=(4,6,3,8), day=tuple(range(1, 21, 2))
+#+END_SRC
+*** genInterval
+    Kind of like genMix but only specify (start, end)
+    e.g. from March to October from 1st to 10th
+#+BEGIN_SRC python
+schedule = StartCalendarInterval()
+schedule.add(genMix(month=(3,8),day=(1,10)
+#+END_SRC
 ** StartOnMount
 ** WatchPath
 ** QueueDirecotries
