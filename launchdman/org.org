@@ -19,6 +19,7 @@
     value: list
     selValue: list
     add value to selfvalue
+    just an append
 *** add(*value)
     calls add and add value to self.value
 *** _remove(removeList, selfValue)
@@ -55,7 +56,6 @@
     self.key set to key,
     self.value set to value
 *** printMe(selfKey, selfValue)
-    same as Single.printMe()
 *** parse()
     again a wrapper of printMe()
 ** BoolPair | Pair
@@ -183,6 +183,16 @@ list: list of dict
 dic: dict e.g.:{'Hour':1, 'Minute':10}
 *** remove(*dic)
 dic: dict e.g.:{'Hour':1, 'Minute':10}
+*** gen(month=0, day=0, week=0, weekday=0, hour=0, minute=0)
+    this function gives you a dict to pass to self.add
+    0 means wildcard
+    weekday is the day in a week, Sunday as 1
+    e.g.:
+#+BEGIN_SRC python
+schedule.add(gen(day=1) # every first day of month
+schedule.remove(gen(day=1) # remove the schedule
+schedule.add(gen(day=1),gen(day=15)) # every first day and the mid month
+#+END_SRC
 ** StartOnMount
 ** WatchPath
 ** QueueDirecotries

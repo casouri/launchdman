@@ -25,10 +25,20 @@ def indent(text, amount, ch=' '):
 
 def flatten(l):
     for el in l:
-        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+        # I don;t want dict to be flattened
+        if isinstance(el, Iterable) and not isinstance(
+                el, (str, bytes)) and not isinstance(el, dict):
             yield from flatten(el)
         else:
             yield el
+
+
+# def flatten(l):
+#     for el in l:
+#         if isinstance(el, list) and not isinstance(el, (str, bytes)):
+#             yield from flatten(el)
+#         else:
+#             yield el
 
 
 def ancestor(obj):
@@ -120,12 +130,13 @@ class Single():
 
     def findAll(self, selfValue):
         '''
-        takes in self.value as l
+        Looks for all the non single values
+        returns a list of them
         '''
         resultList = []
         for element in selfValue:
             if isinstance(element, Single):
-                resultList += element.findAll()
+                resultList += element.findAll(element.value)
             else:
                 resultList.append(element)
         return resultList
@@ -164,6 +175,7 @@ class Single():
         There is no need for a recursive one anyway.
         '''
         for removeValue in removeList:
+            print(removeValue, removeList)
             # if removeValue equal to selfValue, remove
             removeEverything(removeValue, selfValue)
 
@@ -463,18 +475,31 @@ class StartCalendarInterval(Pair):
     def __init__(self, *dic):
         super().__init__()
         self.value = [ArraySingle()]
-        self.l = self.value[0]
+        self.l = self.value[0].value
 
     def add(self, *dic):
         dicList = list(flatten(dic))
+        # for every dict in the list passed in
         for d in dicList:
-            checkKey(d, self.keyWord)
-            self.l.append(Pair(d, dicList[d]))
+            # make a dict single (list of pairs)
+            di = []
+            for k in d:
+                # checkKey(k, self.keyWord)
+                di.append(Pair(k, IntegerSingle(d[k])))
+            dictSingle = DictSingle(di)
+            # append dict single to array single's value
+            self._add([dictSingle], self.l)
 
     def remove(self, *dic):
         dicList = list(flatten(dic))
         for d in dicList:
-            self._remove([Pair(d, dicList[d])], self.l)
+            di = []
+            for k in d:
+                # checkkey(k, self.keyword)
+                di.append(Pair(k, IntegerSingle(d[k])))
+            dictSingle = DictSingle(di)
+            # append dict single to array single
+            self._remove([dictSingle], self.l)
 
     def gen(self, month=0, day=0, week=0, weekday=0, hour=0, minute=0):
         dic = {
@@ -485,21 +510,8 @@ class StartCalendarInterval(Pair):
             'Day': day,
             'Minute': minute
         }
-        dic = {k: v for k, v in dic.iteritems() if v != 0}
-        self.add(dic)
-
-    #MARK: bookmark
-    def rm(self, month=0, day=0, week=0, weekday=0, hour=0, minute=0):
-        dic = {
-            'Month': month,
-            'Day': day,
-            'Week': week,
-            'Weekday': weekday,
-            'Day': day,
-            'Minute': minute
-        }
-        dic = {k: v for k, v in dic.iteritems() if v != 0}
-        self.add(dic)
+        dic = {k: v for k, v in dic.items() if v != 0}
+        return dic
 
 
 class StartOnMount():
