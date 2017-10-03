@@ -180,10 +180,9 @@ class BoolSingle(Single):
     The only difference is it prints differently.
     Usually indicate true of false.
     '''
-    scalar = ''
 
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, boolValue):
+        self.value = [boolValue]
 
     def printMe(self, selfTag='', selfValue='true'):
         text = '</{value}>\n'.format(value=selfValue)
@@ -213,10 +212,6 @@ class ArraySingle(TypedSingle):
 
 
 class DictSingle(TypedSingle):
-    '''
-    No difference from array but with a tag named dict
-    and should contain only pair instance.
-    '''
     pass
 
 
@@ -240,6 +235,9 @@ class Pair(Single):
             self.key = key
         if len(value) != 0:
             self.value = list(flatten(value))
+
+    def parse(self):
+        self.printMe(self.key, self.value)
 
     def printMe(self, selfKey, selfValue):
         text = '<key>{keyName}</key>\n'.format(keyName=selfKey)
@@ -334,8 +332,13 @@ class BoolPair(Pair):
         '''
         This function sets the value of key true.
         '''
-        trueBool = BoolSingle('true')
-        self.value = [trueBool]
+        self.value = [BoolSingle('true')]
+
+    def setToFalse(self):
+        '''
+        Might be needed, set value to false
+        '''
+        self.value = [BoolSingle('false')]
 
 
 class Label(SingleStringPair):

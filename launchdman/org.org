@@ -1,5 +1,8 @@
 * Abustruct classes
 ** Single
+*** Properties
+**** tag<str>
+**** value<list>
 *** init(tag, *value)
     set self.tag to tag, turn value into a list and set to self.value
 *** parse()
@@ -26,17 +29,57 @@
 *** clear()
     set self.value to empty
 ** BoolSingle | Single
-   
+    A type of Single that only have a single tag.
+    The only difference is it prints differently.
+    Usually indicate true of false.
+*** init(value)
+    takes a str value
+*** printMe(selfTag, selfValue)
+    you can call it the same way as Single.printMe,
+    selfTag will just be ignored
 ** TypedSingle | Single
+*** init(*value)
+    self.tag will be set to subclass name strip of "Single"
+    e.g.: StringSingle >> string
+    self.value set to *value
 ** StringSingle | TypedSingle
 ** ArraySingle | TypedSingle
 ** DictSingle | TypedSingle
 
 ** Pair | Single
+*** init(key='', *value)
+    if key empty, self.key set to subclass name.
+    self.key set to key,
+    self.value set to value
+*** printMe(selfKey, selfValue)
+    same as Single.printMe()
+*** parse()
+    again a wrapper of printMe()
 ** BoolPair | Pair
+pair that contains a single BoolSingle
+*** init()
+    set tag to subclass name, value to empty
+    then call setToTrue(), which set value to list contain
+    a true BoolSingle
+*** setToTrue()
+    set self.value to [BoolSingle('true')]
+*** setToFalse()
+    set value to false
 ** SingleValuePair | Pair
+   add and remove method raises error
+*** init()
+    self.key to subclass name, self.value to empty
+    probably to be overwrited
+*** changeTo(value)
+    change value to something, must be overwrited
 ** CoverPair | Pair
+   add and remove method act on its value[0]
 ** SingleStringPair | SingleValuePair
+*** init(string)
+    string<str>
+    set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
 
 * launchd classes
 
@@ -122,3 +165,5 @@
 ** StandardInPath | SingleStringPair
 ** StandardOutPath | SingleStringPair
 ** StandardErrorPath | SingleStringPair
+** SoftResourceLimit | CoverPair
+   
