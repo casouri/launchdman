@@ -33,6 +33,37 @@ def flatten(l):
             yield el
 
 
+def crossCombine(l):
+    '''
+    e.g.: l: [[{'month': 1}, {'month': 2}], [{'day': 2}, {'day': 3}, {'day': 4}]]
+          l: [[dic of month], [dict of day]]
+          l: [[a,a1,a2,...], [b,b1,b2,...]]
+    return: [[a,b], [a,b1], [a,b2], [a1,b], [a1,b1], [a1, b2], [a2,b], [a2,b1], [a2,b2]]
+
+    '''
+    resultList = []
+    firstList = l[0]
+    rest = l[1:]
+    if len(rest) == 0:
+        return firstList
+    for e in firstList:
+        for e1 in crossCombine(rest):
+            resultList.append(combinteDict(e, e1))
+    return resultList
+
+
+def combine(a1, a2):
+    if not isinstance(a1, list):
+        a1 = [a1]
+    if not isinstance(a2, list):
+        a2 = [a2]
+    return a1 + a2
+
+
+def combinteDict(d, d1):
+    return {**d, **d1}
+
+
 # def flatten(l):
 #     for el in l:
 #         if isinstance(el, list) and not isinstance(el, (str, bytes)):
@@ -508,10 +539,75 @@ class StartCalendarInterval(Pair):
             'Week': week,
             'Weekday': weekday,
             'Day': day,
+            'Hour': hour,
             'Minute': minute
         }
         dic = {k: v for k, v in dic.items() if v != 0}
         return dic
+
+    def genMix(self, month=(), day=(), week=(), weekday=(), hour=(),
+               minute=()):
+        '''
+        e.g. month=(1, 4, 6, 8), day=tuple(range(1, 30, 2))
+        Keep in mind that range(1, n) gives you (1, 2, ... , n-1)
+        '''
+        dic = {
+            'Month': month,
+            'Day': day,
+            'Week': week,
+            'Weekday': weekday,
+            'Day': day,
+            'Hour': hour,
+            'Minute': minute
+        }
+        dic = {k: v for k, v in dic.items() if v != ()}
+        grandList = []
+        for k in dic:
+            # e.g. 'Month'
+            l = []
+            for num in dic[k]:  # e.g. (q, 4, 6, 8)
+                l.append({k: num})  # e.g. {'Month': 4}
+            grandList.append(l)
+        print(grandList)
+        return (crossCombine(grandList))
+
+    def genInterval(self,
+                    month=(),
+                    day=(),
+                    week=(),
+                    weekday=(),
+                    hour=(),
+                    minute=()):
+        '''
+        generate list of dict to passed to add.
+        e.g. genInterval(month=(1,3), week(1,2))
+        generate list contains from first to second week in from January to March
+        '''
+        dic = {
+            'Month': month,
+            'Day': day,
+            'Week': week,
+            'Weekday': weekday,
+            'Day': day,
+            'Hour': hour,
+            'Minute': minute
+        }
+        dic = {k: v for k, v in dic.items() if v != ()}
+        # e.g. dic: {'month': (1,5), 'day': (2,4)}
+        grandList = []
+        for k in dic:
+            # e.g. k: 'month', dic[k]: (1,5)
+            l = []
+            rangeTuple = (dic[k][0], dic[k][1] + 1)  # e.g. (1,6)
+            for num in range(rangeTuple[0],
+                             rangeTuple[1]):  # e.g. 1, 2, 3, 4, 5
+                l.append({k: num})  # e.g. [{'month': 1}, {'month': 2}]
+            grandList.append(l)  # e.g. [[list of month], [list of day]]
+        print(grandList)
+        # grandList: [[list of month], [list of day]]
+        #l: [[a,a1,a2,...], [b,b1,b2,...]]
+        # combineDict return: [{a,b}, {a,b1}, {a,b2}, {a1,b}, {a1,b1}, {a1, b2}, {a2,b}, {a2,b1}, {a2,b2}]
+        return crossCombine(grandList)
 
 
 class StartOnMount():
@@ -607,18 +703,4 @@ class Nice():
 
 
 if __name__ == '__main__':
-    # innerSingle1 = Single('inner1', 'aaaaaaaaaaaaa')
-    # innerSingle2 = Single('inner2', 'bbbbbbbbbbbbb')
-    # single1 = Single('single tag1', innerSingle1, innerSingle2)
-    # single2 = Single('single tag2', innerSingle1, innerSingle2)
-    # singleSingle = Single('singleSingle', 'something')
-    # pair1 = Pair('my key', single1, single2)
-    # pair2 = Pair('mey key', singleSingle)
-    # print(pair2.printMe(pair2.key, pair2.value))
-
-    # schedule = StartInterval()
-    # schedule.every(5).day
-    # schedule.every(10).minute
-    schedule = RunAtLoad()
-    print(schedule.key)
-    print(schedule.printMe(schedule.key, schedule.value))
+    print('use debug.py')
