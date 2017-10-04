@@ -216,7 +216,7 @@ schedule = StartCalendarInterval()
 schedule.add(genMix(month=(3,8),day=(1,10)
 #+END_SRC
 ** StartOnMount | BoolPair
-** WatchPath | ArrayOfStringPair
+** WatchPaths | ArrayOfStringPair
 ** QueueDirecotries
 ** KeepAlive
 ** UserName

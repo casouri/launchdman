@@ -620,7 +620,7 @@ class StartOnMount(BoolPair):
     pass
 
 
-class WatchPath(ArrayOfStringPair):
+class WatchPaths(ArrayOfStringPair):
     pass
 
 
