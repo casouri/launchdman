@@ -684,6 +684,11 @@ class OtherJobEnabled(OuterOFInnerPair):
         super().__init__(DictSingle, BoolPair, *key)
 
 
+class AfterInitialDemand(OuterOFInnerPair):
+    def __init__(self, *key):
+        super().__init__(DictSingle, BoolPair, *key)
+
+
 # MARK: add after initial demand
 class PathState(OuterOFInnerPair):
     def __init__(self, *key):
