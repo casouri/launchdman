@@ -739,7 +739,6 @@ class Timeout(SingleIntegerPair):
     pass
 
 
-# MAARK: working
 class ThrottleInverval(SingleIntegerPair):
     pass
 
