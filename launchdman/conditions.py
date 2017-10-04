@@ -234,7 +234,7 @@ class BoolSingle(Single):
         self.value = [boolValue]
 
     def printMe(self, selfTag='', selfValue='true'):
-        text = '</{value}>\n'.format(value=selfValue)
+        text = '</{value}>\n'.format(value=selfValue[0])
         return text
 
 
@@ -341,24 +341,49 @@ class SingleStringPair(Pair):
         self.value = [stringSingle]
 
 
-class ArrayOfStringPair(Pair):
+class OuterOFInnerPair(Pair):
     '''
-    Pair that contains a array single which contains a bunch of string single
+    e.g.: array of string, dict of pair, array of bool
+    Outer: ArraySingle, DictSingle
+    Inner: Pair, StringSingle, IntegerSingle, BoolPair
+    key is set to subclass name
     '''
 
-    def __init__(self, *l):
+    def __init__(self, Outer, Inner, *l):
         super().__init__()
-        self.value = [ArraySingle()]
+        self.value = [Outer()]
         self.l = self.value[0].value
+        self.Outer = Outer
+        self.Inner = Inner
         self.add(l)
 
     def add(self, *l):
-        for string in list(flatten(l)):
-            self.l.append(StringSingle(string))
+        for a in flatten(l):
+            self._add([self.Inner(a)], self.l)
 
     def remove(self, *l):
-        for string in list(flatten(l)):
-            self._remove(StringSingle(string), self.l)
+        for a in flatten(l):
+            self._remove([self.Inner(a)], self.l)
+
+
+# class ArrayOfStringPair(Pair):
+#     '''
+#     Pair that contains a array single which contains a bunch of string single
+#     '''
+
+#     def __init__(self, *l):
+#         super().__init__()
+#         self.value = [ArraySingle()]
+#         self.l = self.value[0].value
+#         self.add(l)
+
+#     def add(self, *l):
+#         for string in list(flatten(l)):
+#             self.l.append(StringSingle(string))
+
+#     def remove(self, *l):
+#         for string in list(flatten(l)):
+#             self._remove(StringSingle(string), self.l)
 
 
 class BoolPair(Pair):
@@ -368,8 +393,8 @@ class BoolPair(Pair):
     At init, value will be set as true.
     '''
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, key=''):
+        super().__init__(key)
         self.setToTrue()
 
     def setToTrue(self):
@@ -417,8 +442,9 @@ class Program(SingleStringPair):
     pass
 
 
-class ProgramArguments(ArrayOfStringPair):
-    pass
+class ProgramArguments(OuterOFInnerPair):
+    def __init__(self, *l):
+        super().__init__(ArraySingle, StringSingle, l)
 
 
 class EnvironmentVariables(Pair):
@@ -620,16 +646,51 @@ class StartOnMount(BoolPair):
     pass
 
 
-class WatchPaths(ArrayOfStringPair):
-    pass
+class WatchPaths(OuterOFInnerPair):
+    def __init__(self, *l):
+        super().__init__(ArraySingle, StringSingle, l)
 
 
-class QueueDirecotries(ArrayOfStringPair):
-    pass
+class QueueDirecotries(OuterOFInnerPair):
+    def __init__(self, *l):
+        super().__init__(ArraySingle, StringSingle, l)
 
 
-class KeepAlive():
-    pass
+# Keep Alive class in two branch classes and a factory function
+class always(BoolPair):
+    def __init__(self):
+        self.key = 'KeepAlive'
+        self.setToTrue()
+
+
+class depends(OuterOFInnerPair):
+    def __init__(self, *key):
+        super().__init__(DictSingle, BoolPair, *key)
+        self.key = 'KeepAlive'
+
+    def addKey(self, key, *value):
+        self._add([key(*value)], self.l)
+
+    def removeKey(self, key, *value):
+        self._remove([key(*value)], self.l)
+
+
+def KeepAlive(KeepAliveBranch=always, *key):
+    return KeepAliveBranch(*key)
+
+
+class OtherJobEnabled(OuterOFInnerPair):
+    def __init__(self, *key):
+        super().__init__(DictSingle, BoolPair, *key)
+
+
+# MARK: add after initial demand
+class PathState(OuterOFInnerPair):
+    def __init__(self, *key):
+        super().__init__(DictSingle, BoolPair, *key)
+
+
+# KeepAlive ends
 
 
 class UserName():

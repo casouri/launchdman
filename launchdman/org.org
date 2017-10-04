@@ -98,13 +98,24 @@ parse dict into self.value
 *** remove(dic)
 remove matching in self.value
    
-** ArrayOfStringPair | Pair
+** ArrayOfStringPair | Pair | not used
 *** init(list)
     list: a list of strings
 *** add(list)
     list: a list of strings
 *** remove(list)
     list: a list of strings
+** OuterOFInnerPair | Pair
+    e.g.: array of string, dict of pair, array of bool
+*** init(Outer, Inner, *l)
+    Outer: ArraySingle, DictSingle
+    Inner: Pair, StringSingle, IntegerSingle, BoolPair
+    key is set to subclass name
+*** add(*l)
+    l: Inner type
+*** remove(*l)
+    l: Inner type
+    
 * launchd classes
 
 ** Label | SingleStringPair
@@ -239,6 +250,21 @@ schedule.add(genMix(month=(3,8),day=(1,10)
 *** remove(list)
     list: a list of strings
 ** KeepAlive
+*** init(type=always, *key)
+    type: Can be always or depends
+    always for always keep alive and depends for depend on conditions
+    if type is depends, you can add some key on init
+    Avaliable keys:
+    SuccessfulExit, Crashed, NetworkState, PathState, 
+*** add(*l)
+*** remove(*l)
+*** addKey(key, *value)
+key: PathState, OtherJobEnabled
+value: string, path or job
+*** remvoeKey(key, *value)
+key: PathState, OtherJobEnabled
+value: string, path or job
+    
 ** UserName
 ** GroupName
 ** InitGroups
