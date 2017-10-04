@@ -1,4 +1,4 @@
-* Abustruct classes
+* Abstract classes
 ** Single
 *** Properties
 **** tag<str>
@@ -78,9 +78,7 @@ pair that contains a single BoolSingle
 ** CoverPair | Pair | not used
    add and remove method act on its value[0]
 ** SingleStringPair | SingleValuePair
-*** init(string)
-    string<str>
-    set self.value to StringSingle(string)
+*** init(string) string<str> set self.value to StringSingle(string)
 *** changTo(newString)
     newString<str>
 
@@ -147,9 +145,21 @@ remove matching in self.value
 *** init(path)
     takes a path<str> as path
 ** StandardInPath | SingleStringPair
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
 ** StandardOutPath | SingleStringPair
-** WorkingDirectory
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
+** iWorkingDirectory
 ** StandardErrorPath | SingleStringPair
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
 ** SoftResourceLimit | SingleDictPair
 *** init(dic)
 dic: dict
@@ -265,9 +275,21 @@ value: string, path or job
 key: PathState, OtherJobEnabled
 value: string, path or job
     
-** UserName
-** GroupName
-** InitGroups
+** UserName | SingleStringPair
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
+** GroupName | SingleStringPair
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
+** InitGroups | SingleStringPair
+*** init(string) string<str> set self.value to StringSingle(string)
+*** changTo(newString)
+    newString<str>
+
 ** Umask
 ** RootDirecotry
 ** AbandonProcessGroup

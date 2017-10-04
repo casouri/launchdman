@@ -337,8 +337,17 @@ class SingleStringPair(Pair):
 
     def changeTo(self, newString):
         '''change string single to newString'''
-        stringSingle = StringSingle(newString)
-        self.value = [stringSingle]
+        self.value = [StringSingle(newString)]
+
+
+class SingleIntegerPair(Pair):
+    def __init__(self, string):
+        super().__init__()
+        self.changeTo(string)
+
+    def changeTo(self, newInt):
+        '''change string single to newString'''
+        self.value = [IntegerSingle(newInt)]
 
 
 class OuterOFInnerPair(Pair):
@@ -698,80 +707,49 @@ class PathState(OuterOFInnerPair):
 # KeepAlive ends
 
 
-class UserName():
+class UserName(SingleStringPair):
     pass
 
 
-class GroupName():
+class GroupName(SingleStringPair):
     pass
 
 
-class InitGroups():
+class InitGroups(SingleStringPair):
     pass
 
 
-class Umask():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class Umask(SingleIntegerPair):
+    pass
 
 
-class RootDirecotry():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class RootDirecotry(SingleStringPair):
+    pass
 
 
-class AbandonProcessGroup():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class AbandonProcessGroup(BoolPair):
+    pass
 
 
-class ExitTimeOut():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class ExitTimeOut(SingleIntegerPair):
+    pass
 
 
-class Timeout():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class Timeout(SingleIntegerPair):
+    pass
 
 
-class ThrottleInverval():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+# MAARK: working
+class ThrottleInverval(SingleIntegerPair):
+    pass
 
 
-class LegacyTimers():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class LegacyTimers(BoolPair):
+    pass
 
 
-class Nice():
-    def __init__(self):
-        pass
-
-    def update(self):
-        pass
+class Nice(SingleIntegerPair):
+    pass
 
 
 if __name__ == '__main__':
