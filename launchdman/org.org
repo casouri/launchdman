@@ -216,8 +216,28 @@ schedule = StartCalendarInterval()
 schedule.add(genMix(month=(3,8),day=(1,10)
 #+END_SRC
 ** StartOnMount | BoolPair
+*** init()
+    set tag to subclass name, value to empty
+    then call setToTrue(), which set value to list contain
+    a true BoolSingle
+*** setToTrue()
+    set self.value to [BoolSingle('true')]
+*** setToFalse()
+    set value to false
 ** WatchPaths | ArrayOfStringPair
-** QueueDirecotries
+*** init(list)
+    list: a list of strings
+*** add(list)
+    list: a list of strings
+*** remove(list)
+    list: a list of strings
+** QueueDirecotries | ArrayOfStringPair
+*** init(list)
+    list: a list of strings
+*** add(list)
+    list: a list of strings
+*** remove(list)
+    list: a list of strings
 ** KeepAlive
 ** UserName
 ** GroupName

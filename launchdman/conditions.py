@@ -624,7 +624,7 @@ class WatchPaths(ArrayOfStringPair):
     pass
 
 
-class QueueDirecotries():
+class QueueDirecotries(ArrayOfStringPair):
     pass
 
 
