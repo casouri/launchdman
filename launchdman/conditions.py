@@ -1,5 +1,6 @@
 import textwrap
 from collections import Iterable
+from pathlib import Path
 
 
 def checkKey(key, keyList):
@@ -128,7 +129,7 @@ class Single():
         self.value = list(flatten(value))
 
     def parse(self):
-        self.printMe(self.tag, self.value)
+        return self.printMe(self.tag, self.value)
 
     def printMe(self, selfTag, selfValue):
         if len(selfValue) == 0:
@@ -223,6 +224,41 @@ class Single():
         self.value = []
 
 
+class Job(Single):
+    def __init__(self, path):
+        self.me = Path(path)
+        self.tag = 'dict'
+        self.value = []
+
+    def write(self):
+        with open(self.me, 'w') as f:
+            f.write(self.printMe(self.tag, self.value))
+
+    def printMe(self, selfTag, selfValue):
+        if len(selfValue) == 0:
+            return ''
+        else:
+            valueText = ''
+            for element in selfValue:
+                # if the element is another single
+                # or merely an object
+                # both possibility should not happen in the same time
+                # if so, user is not doing the right thing
+                if singleOrPair(element) == 'Single':
+                    # ask that single to print itself
+                    valueText += element.printMe(element.tag, element.value)
+                elif singleOrPair(element) == 'Pair':
+                    valueText += element.printMe(element.key, element.value)
+                else:
+                    # simply print that element
+                    valueText += str(element) + '\n'
+            valueText = indent(valueText, 4)
+            text = '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<{tag}>\n'.format(
+                tag=selfTag) + valueText + '</{tag}>\n</plist>'.format(
+                    tag=selfTag)
+            return text
+
+
 class BoolSingle(Single):
     '''
     A type of Single that only have a single tag.
@@ -234,7 +270,7 @@ class BoolSingle(Single):
         self.value = [boolValue]
 
     def printMe(self, selfTag='', selfValue='true'):
-        text = '</{value}>\n'.format(value=selfValue[0])
+        text = '<{value}/>\n'.format(value=selfValue[0])
         return text
 
 
@@ -646,7 +682,7 @@ class StartCalendarInterval(Pair):
             grandList.append(l)  # e.g. [[list of month], [list of day]]
         print(grandList)
         # grandList: [[list of month], [list of day]]
-        #l: [[a,a1,a2,...], [b,b1,b2,...]]
+        # l: [[a,a1,a2,...], [b,b1,b2,...]]
         # combineDict return: [{a,b}, {a,b1}, {a,b2}, {a1,b}, {a1,b1}, {a1, b2}, {a2,b}, {a2,b1}, {a2,b2}]
         return crossCombine(grandList)
 
@@ -749,7 +785,3 @@ class LegacyTimers(BoolPair):
 
 class Nice(SingleIntegerPair):
     pass
-
-
-if __name__ == '__main__':
-    print('use debug.py')
