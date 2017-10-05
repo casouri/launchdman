@@ -269,10 +269,10 @@ schedule.add(genMix(month=(3,8),day=(1,10)
 *** add(*l)
 *** remove(*l)
 *** addKey(key, *value)
-key: PathState, OtherJobEnabled
+key: PathState, OtherJobEnabled, AfterInitialDemand
 value: string, path or job
 *** remvoeKey(key, *value)
-key: PathState, OtherJobEnabled
+key: PathState, OtherJobEnabled, AfterInitialDemand
 value: string, path or job
     
 ** UserName | SingleStringPair
