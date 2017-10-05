@@ -65,14 +65,6 @@ def combinteDict(d, d1):
     return {**d, **d1}
 
 
-# def flatten(l):
-#     for el in l:
-#         if isinstance(el, list) and not isinstance(el, (str, bytes)):
-#             yield from flatten(el)
-#         else:
-#             yield el
-
-
 def ancestor(obj):
     return list(obj.__class__.__mro__)[-2]
 
@@ -101,13 +93,6 @@ def removeEverything(toBeRemoved, l):
             l.remove(toBeRemoved)
         except:
             successful = False
-
-
-# def makeReferenceList(originList):
-#     referenceList = []
-#     for i in originList:
-#         referenceList.append(i)
-#     return referenceList
 
 
 class Single():
@@ -342,30 +327,6 @@ class Pair(Single):
         return text
 
 
-class CoverPair(Pair):
-    '''
-    pair that have a array or dict as value.
-    Then it make sense to let add and remove act on that array/dict's value
-    instead of instance.value.
-    Its value should contain only one single.
-    '''
-
-    # def add(self, *value):
-    #     '''
-    #     add to self.value.value
-    #     '''
-    #     flattenedValueList = list(flatten(value))
-    #     super()._add(flattenedValueList, self.value[0].value)
-    #     return (flattenedValueList)
-
-    # def remove(self, *l):
-    #     '''
-    #     remove from self.value.value
-    #     '''
-    #     removeList = list(flatten(l))
-    #     super()._remove(removeList, self.value[0].value)
-
-
 class SingleStringPair(Pair):
     def __init__(self, string):
         super().__init__()
@@ -411,26 +372,6 @@ class OuterOFInnerPair(Pair):
             self._remove([self.Inner(a)], self.l)
 
 
-# class ArrayOfStringPair(Pair):
-#     '''
-#     Pair that contains a array single which contains a bunch of string single
-#     '''
-
-#     def __init__(self, *l):
-#         super().__init__()
-#         self.value = [ArraySingle()]
-#         self.l = self.value[0].value
-#         self.add(l)
-
-#     def add(self, *l):
-#         for string in list(flatten(l)):
-#             self.l.append(StringSingle(string))
-
-#     def remove(self, *l):
-#         for string in list(flatten(l)):
-#             self._remove(StringSingle(string), self.l)
-
-
 class BoolPair(Pair):
     '''
     A special type of pair that contains it's key and
@@ -463,15 +404,13 @@ class SingleDictPair(Pair):
     def __init__(self, dic):
         super().__init__()
         self.value = [DictSingle()]
-        self.dicValue = self.value[0].value
+        self.d = self.value[0].value
         self.add(dic)
 
     def add(self, dic):
         for kw in dic:
-            # if kw not in self.keyWord:
-            #     raise AttributeError('key word "{}" not valid'.format(kw))
             checkKey(kw, self.keyWord)
-            self.dicValue.append(Pair(kw, StringSingle(dic[kw])))
+            self._add([Pair(kw, StringSingle(dic[kw]))], self.d)
 
     def remove(self, dic):
         for kw in dic:
