@@ -852,8 +852,8 @@ class StartInterval(Pair):
 
     Example:
 
-        config = StartInterval.every(1).second
-        config = StartInterval.every(10).day
+        config = StartInterval().every(1).second
+        config = StartInterval().every(10).day
 
     Avaliable time intervals are: second, minute. hour, day, week.
 
@@ -894,24 +894,28 @@ class StartInterval(Pair):
         '''set unit to minute'''
         self.magnification = 60
         self._update(self.baseNumber, self.magnification)
+        return self
 
     @property
     def hour(self):
         '''set unit to hour'''
         self.magnification = 3600
         self._update(self.baseNumber, self.magnification)
+        return self
 
     @property
     def day(self):
         '''set unit to day'''
         self.magnification = 86400
         self._update(self.baseNumber, self.magnification)
+        return self
 
     @property
     def week(self):
         '''set unit to week'''
         self.magnification = 345600
         self._update(self.baseNumber, self.magnification)
+        return self
 
 
 class StartCalendarInterval(Pair):
