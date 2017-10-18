@@ -1,6 +1,6 @@
 .. image:: icon.png
-   :height: 20 %
-   :width: 20 %
+   :height: 0.2
+   :width: 0.2
 
 launchdman
 ==========
@@ -11,7 +11,6 @@ If you want to schedule to run certain tasks or programs, or run them in certain
 launchdman lets you build your configurations and manage(add, remove, group, etc) them on the fly.
 
 Inspired by schedule_ module.
-/var/folders/hb/cyzjyvfd3nj9y3h23ps8qb8r0000gn/T/com.evernote.Evernote/WebKitDnD.P3YnKG/扫描宝文档创建于2017年10月18日 下午1_01_36.png
 .. _schedule: https://github.com/dbader/schedule
 
 Features
