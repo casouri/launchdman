@@ -581,6 +581,7 @@ class OuterOFInnerPair(Pair):
         Args:
             Outer (class): One of the possible outer classes.
             Inner (class): One of the possible inner classes.
+            *l: To be processed and set to value
         '''
         super().__init__()
         self.value = [Outer()]
@@ -590,100 +591,228 @@ class OuterOFInnerPair(Pair):
         self.add(l)
 
     def add(self, *l):
+        '''add inner to outer
+
+        Args:
+            *l: element that is passed into Inner init
+        '''
         for a in flatten(l):
             self._add([self.Inner(a)], self.l)
 
     def remove(self, *l):
+        '''remove inner from outer
+
+        Args:
+            *l element that is passes into Inner init
+        '''
         for a in flatten(l):
             self._remove([self.Inner(a)], self.l)
 
 
 class BoolPair(Pair):
-    '''
-    A special type of pair that contains it's key and
-    only one tag, usually </true> or </false>.
-    At init, value will be set as true.
-    '''
+    '''A special type of pair that contains it's key and only one tag, usually </true> or </false>.'''
 
     def __init__(self, key=''):
+        '''init
+
+        set value to true
+
+        Args:
+        key (str): either 'true' or 'false'
+        '''
         super().__init__(key)
         self.setToTrue()
 
     def setToTrue(self):
-        '''
-        This function sets the value of key true.
-        '''
+        '''This method sets the value of key true.'''
         self.value = [BoolSingle('true')]
 
     def setToFalse(self):
-        '''
-        Might be needed, set value to false
-        '''
+        '''Might be needed, set value to false.'''
         self.value = [BoolSingle('false')]
+
+    def add(self):
+        pass
+
+    def remove(self):
+        pass
+
+    def _add(self):
+        pass
+
+    def _remove(self):
+        pass
 
 
 class SingleDictPair(Pair):
-    '''
-    Pair that contains one DictSingle in its value
-    '''
+    '''Pair that contains one DictSingle(which contains pairs) in its value.'''
 
     def __init__(self, dic):
+        '''init
+
+        Args:
+            dic (dict): key and value
+        '''
         super().__init__()
         self.value = [DictSingle()]
         self.d = self.value[0].value
         self.add(dic)
 
     def add(self, dic):
+        '''adds a dict as pair
+
+        Args:
+            dic (dict): key and value
+        '''
         for kw in dic:
             checkKey(kw, self.keyWord)
             self._add([Pair(kw, StringSingle(dic[kw]))], self.d)
 
     def remove(self, dic):
+        '''remove the pair by passing a identical dict
+
+        Args:
+            dic (dict): key and value
+        '''
         for kw in dic:
             removePair = Pair(kw, dic[kw])
             self._remove([removePair])
 
 
 class Label(SingleStringPair):
+    '''Label config
+
+    Example::
+
+        config = Label('some-label')
+        config.changeTo('some-other-label')
+
+    '''
     pass
 
 
 class Program(SingleStringPair):
+    '''Program config
+
+    Example::
+
+        config = Program('/path/to/program')
+        config.changeTo('/new/path/to/program')
+
+    '''
     pass
 
 
 class ProgramArguments(OuterOFInnerPair):
+    '''ProgramArguments config
+
+    Example::
+
+        config = ProgramArguments(['-r', '--outfile', '-m'])
+        config = ProgramArguments('-r')
+        config = ProgramArguments('-r', '-m', '--file')
+        config.remove('-r')
+        config.add('--kill')
+    '''
+
     def __init__(self, *l):
+        '''init
+
+        Args
+            *l: argument(s) you want to pass
+        '''
         super().__init__(ArraySingle, StringSingle, l)
 
 
 class EnvironmentVariables(Pair):
+    '''EnvironmentVariables config
+
+    Example::
+
+        config = EnvironmentVariables('/bin:/usr/bin:/usr/local/bin')
+        config.changeTo('some-other-env')
+
+    '''
+
     def __init__(self, path):
+        '''init
+
+        Args:
+            path (str): the environment
+        '''
         super().__init__()
         self.changeTo(path)
 
     def changeTo(self, path):
+        '''change value
+
+        Args:
+            path (str): the new environment path
+        '''
         dictionary = DictSingle(Pair('PATH', StringSingle(path)))
         self.value = [dictionary]
 
 
 class StandardInPath(SingleStringPair):
+    '''StandardInPath config
+
+    Example::
+
+        config = StandardInPath('/tmp/in')
+        config.changeTo('some/other/path')
+
+    '''
     pass
 
 
 class StandardOutPath(SingleStringPair):
+    '''StandardOutPath config
+
+    Example::
+
+        config = StandardOutPath('/tmp/out')
+        config.changeTo('some/other/path')
+
+    '''
     pass
 
 
 class StandardErrorPath(SingleStringPair):
+    '''StandardErrorPath config
+
+    Example::
+
+        config = StandardErrorPath('/tmp/error')
+        config.changeTo('some/other/path')
+
+    '''
     pass
 
 
 class WorkingDirectory(SingleStringPair):
+    '''WorkingDirectory config
+
+    Example::
+
+        config = WorkingDirectory('/home')
+        config.changeTo('some/other/path')
+
+    '''
     pass
 
 
 class SoftResourceLimit(SingleDictPair):
+    '''SoftResourceLimit config
+
+    Example::
+
+        config = SoftResourceLimit({'CPU': 2, 'FileSize': 1024})
+        config.add({'NumberOfFiles': 10})
+        config.remove({'CPU': 2})
+
+    Avaliable keys are: CPU, FileSize, NumberOfFiles, Core, Data, MemoryLock, NumberOfProcesses, ResidentSetSize, Stack.
+
+    '''
     keyWord = [
         'CPU', 'FileSize', 'NumberOfFiles', 'Core', 'Data', 'MemoryLock',
         'NumberOfProcesses', 'ResidentSetSize', 'Stack'
@@ -691,6 +820,17 @@ class SoftResourceLimit(SingleDictPair):
 
 
 class HardResourceLimit(SingleDictPair):
+    '''HardResourceLimit config
+
+    Example::
+
+        config = HardResourceLimit({'CPU': 2, 'FileSize': 1024})
+        config.add({'NumberOfFiles': 10})
+        config.remove({'CPU': 2})
+
+    Avaliable keys are: CPU, FileSize, NumberOfFiles, Core, Data, MemoryLock, NumberOfProcesses, ResidentSetSize, Stack.
+
+    '''
     keyWord = [
         'CPU', 'FileSize', 'NumberOfFiles', 'Core', 'Data', 'MemoryLock',
         'NumberOfProcesses', 'ResidentSetSize', 'Stack'
@@ -698,10 +838,26 @@ class HardResourceLimit(SingleDictPair):
 
 
 class RunAtLoad(BoolPair):
+    '''RunAtLoad config
+
+    Example::
+
+        config = RunAtLoad()
+    '''
     pass
 
 
 class StartInterval(Pair):
+    '''StartInterval config
+
+    Example:
+
+        config = StartInterval.every(1).second
+        config = StartInterval.every(10).day
+
+    Avaliable time intervals are: second, minute. hour, day, week.
+
+    '''
     baseNumber = 1
     magnification = 1
 
@@ -709,48 +865,102 @@ class StartInterval(Pair):
         super().__init__()
 
     def every(self, baseNumber):
+        '''set base number
+
+        Args:
+            baseNumber (str): number of day/minute/second/etc
+        '''
         self.baseNumber = baseNumber
         return self
 
     def _update(self, baseNumber, magnification):
+        '''update self.value with basenumber and time interval
+
+        Args:
+            baseNumber (str): self.baseNumber
+            magnification (str): self.magnification
+        '''
         interval = int(baseNumber * magnification)
         self.value = [IntegerSingle(interval)]
 
     @property
     def second(self):
+        '''set unit to second'''
         self.magnification = 1
         self._update(self.baseNumber, self.magnification)
 
     @property
     def minute(self):
+        '''set unit to minute'''
         self.magnification = 60
         self._update(self.baseNumber, self.magnification)
 
     @property
     def hour(self):
+        '''set unit to hour'''
         self.magnification = 3600
         self._update(self.baseNumber, self.magnification)
 
     @property
     def day(self):
+        '''set unit to day'''
         self.magnification = 86400
         self._update(self.baseNumber, self.magnification)
 
     @property
     def week(self):
+        '''set unit to week'''
         self.magnification = 345600
         self._update(self.baseNumber, self.magnification)
 
 
 class StartCalendarInterval(Pair):
+    '''Set StartCalendarInterval config
+
+    Usage:
+        pass a dictionary as setting into StartCalendarInterval, possible key words are Month, Day, Weekday, Hour, Minute. *Note the uppercase.*
+
+    For example::
+
+        # for simple config
+        schedule = StartCalendarInterval({'Day': 1, 'Month': 3}) # every March 1st
+
+        # for more straight forward syntax, use gen()
+        schedule.add(schedule.gen(day=1, month=3)) # every March 1st
+
+        # for a interval schedule, use genInterval()
+        schedule.add(schedule.genInterval(day=(1,15))) # from 1st to 15th every month
+
+        # for more complicated(corn-like) schedule, use genMix()
+        schedule.add(schedule.genMix(day=(1, 3, 5), month=(2,4)))
+
+        schedule.add(schedule.genMix(day=tuple(range(1, 10, 2))))
+        # 1st, 3rd, 5th, 7th, 9th every month
+
+        # like other add() method, StartCalendarInterval.add() can take multiple arguments or lists
+        schedule.add(schedule.gen(day=1), schedule.gen(day=15), [schedule.gen(month=12), schedule.gen(weekday=3)])
+
+
+
+    '''
     keyWord = ['Month', 'Day', 'Weekday', 'Hour', 'Minute']
 
     def __init__(self, *dic):
+        '''init
+
+        Args:
+            *dic (dict): dictionary with format {'Day': 12, 'Hour': 34} Avaliable keys are Month, Day, Weekday, Hour, Minute. *Note the uppercase.* You can use gen(), genMix() to generate complex config dictionary.
+        '''
         super().__init__()
         self.value = [ArraySingle()]
         self.l = self.value[0].value
 
     def add(self, *dic):
+        '''add a config to StartCalendarInterval.
+
+        Args:
+            *dic (dict): dictionary with format {'Day': 12, 'Hour': 34} Avaliable keys are Month, Day, Weekday, Hour, Minute. *Note the uppercase.* You can use gen(), genMix() to generate complex config dictionary.
+        '''
         dicList = list(flatten(dic))
         # for every dict in the list passed in
         for d in dicList:
@@ -764,6 +974,11 @@ class StartCalendarInterval(Pair):
             self._add([dictSingle], self.l)
 
     def remove(self, *dic):
+        '''remove a calendar config.
+
+        Args:
+            *dic (dict): dictionary with format {'Day': 12, 'Hour': 34} Avaliable keys are Month, Day, Weekday, Hour, Minute. *Note the uppercase.* You can use gen(), genMix() to generate complex config dictionary.
+        '''
         dicList = list(flatten(dic))
         for d in dicList:
             di = []
@@ -774,7 +989,20 @@ class StartCalendarInterval(Pair):
             # append dict single to array single
             self._remove([dictSingle], self.l)
 
-    def gen(self, month=0, day=0, week=0, weekday=0, hour=0, minute=0):
+    def gen(self, month=0, week=0, day=0, weekday=0, hour=0, minute=0):
+        '''generate config dictionary to pass to add() or remove()
+
+        Args:
+            month (int): month in a year, from 1 to 12
+            week (int): week in a month, from 1 to 4
+            day (int): day in a month, from 1 to 31
+            weekday (int): weekday in a week, from 0 to 7. 0 and 7 both represent Sunday
+            hour (int): hour in a day, from 0 to 24
+            minute (int): minute in an hour, from 0 to 59
+
+        Returns:
+            dict: a dictionary with form {'Day': 1, etc}
+        '''
         dic = {
             'Month': month,
             'Day': day,
@@ -789,9 +1017,22 @@ class StartCalendarInterval(Pair):
 
     def genMix(self, month=(), day=(), week=(), weekday=(), hour=(),
                minute=()):
-        '''
-        e.g. month=(1, 4, 6, 8), day=tuple(range(1, 30, 2))
-        Keep in mind that range(1, n) gives you (1, 2, ... , n-1)
+        '''Generate a list of config dictionarie(s), in form of [{'Day':12, 'Month':3}, {}, etc]
+        For example::
+
+            genMix(month=(1, 4, 6, 8), day=tuple(range(1, 30, 2)))
+            # Keep in mind that range(1, n) gives you (1, 2, ... , n-1)
+
+        Args:
+            month (tuple): month in a year, from 1 to 12
+            week (tuple): week in a month, from 1 to 4
+            day (tuple): day in a month, from 1 to 31
+            weekday (tuple): weekday in a week, from 0 to 7. 0 and 7 both represent Sunday
+            hour (tuple): hour in a day, from 0 to 24
+            minute (tuple): minute in an hour, from 0 to 59
+
+        Returns:
+            list: a list of dictionarie(s) with form [{'Day':12, 'Month':3}, {}, etc]
         '''
         dic = {
             'Month': month,
@@ -820,10 +1061,22 @@ class StartCalendarInterval(Pair):
                     weekday=(),
                     hour=(),
                     minute=()):
-        '''
-        generate list of dict to passed to add.
-        e.g. genInterval(month=(1,3), week(1,2))
-        generate list contains from first to second week in from January to March
+        '''Generate list of config dictionarie(s) that represent a interval of time. Used to be passed into add() or remove().
+        For example::
+
+            genInterval(month=(1,4), week(1,4))
+            # generate list contains from first to third week in from January to March
+
+        Args:
+            month (tuple): (start, end) month in a year, from 1 to 12
+            week (tuple): (start, end) week in a month, from 1 to 4
+            day (tuple): (start, end) day in a month, from 1 to 31
+            weekday (tuple): (start, end) weekday in a week, from 0 to 7. 0 and 7 both represent Sunday
+            hour (tuple): (start, end) hour in a day, from 0 to 24
+            minute (tuple): (start, end) minute in an hour, from 0 to 59
+
+        Returns:
+            list: a list of dictionarie(s) with form [{'Day':12, 'Month':3}, {}, etc]
         '''
         dic = {
             'Month': month,
@@ -840,7 +1093,8 @@ class StartCalendarInterval(Pair):
         for k in dic:
             # e.g. k: 'month', dic[k]: (1,5)
             l = []
-            rangeTuple = (dic[k][0], dic[k][1] + 1)  # e.g. (1,6)
+            # rangeTuple = (dic[k][0], dic[k][1] + 1)  # e.g. (1,6)
+            rangeTuple = dic[k]
             for num in range(rangeTuple[0],
                              rangeTuple[1]):  # e.g. 1, 2, 3, 4, 5
                 l.append({k: num})  # e.g. [{'month': 1}, {'month': 2}]
@@ -853,27 +1107,67 @@ class StartCalendarInterval(Pair):
 
 
 class StartOnMount(BoolPair):
+    '''StartOnMount config
+
+    Example::
+
+        config = StartOnMount()
+    '''
     pass
 
 
 class WatchPaths(OuterOFInnerPair):
+    '''WatchPaths config
+
+    Example::
+
+        config = WatchPaths(['/path1', '/path2', '/path3'])
+        config = WatchPaths('/path2')
+        config = WatchPaths('/path1', '/path2', '/path3')
+        config.remove('/path1')
+        config.add('/path1')
+    '''
+
     def __init__(self, *l):
+        '''init
+
+        Args
+            *l: path you want to watch
+        '''
         super().__init__(ArraySingle, StringSingle, l)
 
 
 class QueueDirecotries(OuterOFInnerPair):
+    '''QueueDirectories config
+
+    Example::
+
+        config = QueueDirectories(['/path1', '/path2', '/path3'])
+        config = QueueDirectories('/path2')
+        config = QueueDirectories('/path1', '/path2', '/path3')
+        config.remove('/path1')
+        config.add('/path1')
+    '''
+
     def __init__(self, *l):
+        '''init
+
+        Args
+            *l: path you want to watch
+        '''
         super().__init__(ArraySingle, StringSingle, l)
 
 
 # Keep Alive class in two branch classes and a factory function
-class always(BoolPair):
+class KeepAliveAlways(BoolPair):
+    '''KeepAlive option'''
+
     def __init__(self):
         self.key = 'KeepAlive'
         self.setToTrue()
 
 
-class depends(OuterOFInnerPair):
+class KeepAliveDepends(OuterOFInnerPair):
     def __init__(self, *key):
         super().__init__(DictSingle, BoolPair, *key)
         self.key = 'KeepAlive'
@@ -885,23 +1179,87 @@ class depends(OuterOFInnerPair):
         self._remove([key(*value)], self.l)
 
 
-def KeepAlive(KeepAliveBranch=always, *key):
-    return KeepAliveBranch(*key)
+def KeepAlive(branch='always', *key):
+    '''KeepAlive config
+
+    Example::
+
+        config = KeepAlive('always') # keepAlive no matter what
+        config2 = KeepAlive('depends', SuccessfulExit())
+        config2.addKey(Crashed())
+        config2.removeKey(Crashed())
+        config2.addKey(OtherJobEnabled('some-job'))
+
+    You can also use ``KeepAliveAlways()`` or ``KeepAliveDepends()``, ``KeepAlive()`` is just a helper function that returns either one of the two classes.
+
+    Args:
+        branch (str): indicates which version of ``KeepAlive`` you want, can be either 'always' or 'depends'.
+        *key (str): If there is any key to be passed to depend version of ``KeepAlive``, put it in ``key``. Possible keys are ``SuccessfulExit()``, ``Crashed()``, ``OtherJobEnabled()``, ``AfterInitialDemand()`` and ``PathState()``.
+
+
+    Raises:
+        KeyError: if branch is not one of 'always' and 'depends'
+
+    Returns:
+        class: the actual class. Either ``KeepAliveAlways`` or ``KeepAliveDepends``.
+    '''
+    if branch == 'always':
+        return KeepAliveAlways()
+    elif branch == 'depends':
+        return KeepAliveDepends(key)
+    else:
+        raise KeyError('branch only accept either \'always\' or \'depends\'')
+
+
+class SuccessfulExit(BoolPair):
+    '''SuccessfulExit option for KeepAlive'''
+    pass
+
+
+class Crashed(BoolPair):
+    '''Crashed option for KeepAlive'''
+    pass
 
 
 class OtherJobEnabled(OuterOFInnerPair):
+    '''OtherJobEnabled option for KeepAlive
+
+    Example::
+
+        OtherJobEnabled('some-job')
+    '''
+
     def __init__(self, *key):
+        '''init
+
+        Args
+            *l: job you want to refer to
+        '''
         super().__init__(DictSingle, BoolPair, *key)
 
 
 class AfterInitialDemand(OuterOFInnerPair):
+    '''AfterInitialDemand option for KeepAlive'''
+
     def __init__(self, *key):
+        '''init
+
+        Args
+            *l: job you want to refer to
+        '''
         super().__init__(DictSingle, BoolPair, *key)
 
 
 # MARK: add after initial demand
 class PathState(OuterOFInnerPair):
+    '''PathState option for KeepAlive'''
+
     def __init__(self, *key):
+        '''init
+
+        Args
+            *l: path you want to refer to
+        '''
         super().__init__(DictSingle, BoolPair, *key)
 
 
@@ -909,44 +1267,121 @@ class PathState(OuterOFInnerPair):
 
 
 class UserName(SingleStringPair):
+    '''UserName config
+
+    Example::
+
+        config = UserName('some-user')
+        config.changeTo('some-other-user')
+    '''
     pass
 
 
 class GroupName(SingleStringPair):
+    '''GroupName config
+
+    Example::
+
+        config = GroupName('some-group')
+        config.changeTo('some-other-group')
+    '''
     pass
 
 
 class InitGroups(SingleStringPair):
+    '''Label InitGroups
+
+    Example::
+
+        config = InitGroups('some-group')
+        config.changeTo('some-other-group')
+    '''
     pass
 
 
 class Umask(SingleIntegerPair):
+    '''Umask config
+
+    Example::
+
+        config = Label(0)
+        config.changeTo(1)
+    '''
     pass
 
 
 class RootDirecotry(SingleStringPair):
+    '''RootDirecotry config
+
+    Example::
+
+        config = RootDirecotry('some-dir')
+        config.changeTo('some-other-dir')
+    '''
     pass
 
 
 class AbandonProcessGroup(BoolPair):
+    '''AbandonProcessGroup config
+
+    Example::
+
+        config = AbandonProcessGroup()
+    '''
     pass
 
 
 class ExitTimeOut(SingleIntegerPair):
+    '''ExitTimeOut config
+
+    Example::
+
+        config = Label(30)
+        config.changeTo(60)
+    '''
     pass
 
 
 class Timeout(SingleIntegerPair):
+    '''Timeout config
+
+    Example::
+
+        config = Timeout(30)
+        config.changeTo(60)
+    '''
     pass
 
 
 class ThrottleInverval(SingleIntegerPair):
+    '''ThrottleInverval config
+
+    Example::
+
+        config = Label(5)
+        config.changeTo(10)
+        KeepAlive('always', ThrottleInverval(5))
+
+    '''
     pass
 
 
 class LegacyTimers(BoolPair):
+    '''LegacyTimers config
+
+    Example::
+
+        config = LegacyTimers()
+    '''
     pass
 
 
 class Nice(SingleIntegerPair):
+    '''Nice config
+
+    Example::
+
+        config = Nice(-5)
+        config.changeTo(20)
+    '''
     pass
