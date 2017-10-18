@@ -69,5 +69,5 @@ Feel free to ask me if you have any questions.
 License
 =======
 
-Distributed under MIT license. See :ref:`LICENSE.txt` for more information.
+Distributed under MIT license. See :file:`LICENSE.txt` for more information.
 
