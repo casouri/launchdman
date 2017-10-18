@@ -6,7 +6,17 @@ launchdman is a parser and manager for launchd, the service management framework
 If you want to schedule to run certain tasks or programs, or run them in certain conditions, launcd is what you use on macOS.
 launchdman lets you build your configurations and manage(add, remove, group, etc) them on the fly.
 
-If you have any questions, feel free to ask me<yuan.k.fu@gmail.com> or submit issues on GitHub: https://github.com/casouri/launchdman
+Inspired by schedule_ module.
+
+.. _schedule: https://github.com/dbader/schedule
+
+Features
+========
+
+- A simple to use API for creating and managing launchd configurations.
+- Very lightweight and no external dependencies.
+
+
 
 Quick Start
 ===========
@@ -43,3 +53,15 @@ Documentation
 For documentation, check ReadTheDocs_
 
 .. _ReadTheDocs: http://launchdman.readthedocs.io/en/latest/
+
+
+Meta
+====
+
+Yuan Fu <yuan.k.fu@gmail.com>
+Feel free to ask me if you have any questions.
+
+License
+=======
+
+Distributed under MIT license. See LICENSE.txt for more information.
