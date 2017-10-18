@@ -13,15 +13,17 @@ Quick Start
 
 ::
 
-    from launchdman import *
+   pip3 install launchdman
 
 ::
 
+    from launchdman import *
+
     # Label and Program are must-haves
-    job.add(launchdman.Label('job'), launchdman.Program('/usr/local/bin/job'))
+    job.add(Label('job'), Program('/usr/local/bin/job'))
 
     # I want it to run at load
-    job.add(launcddman.RunAtLoad())
+    job.add(RunAtLoad())
 
     # write to plist
     job.write()
