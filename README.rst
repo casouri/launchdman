@@ -1,3 +1,5 @@
+.. image:: icon.png
+
 launchdman
 ==========
 
@@ -7,7 +9,7 @@ If you want to schedule to run certain tasks or programs, or run them in certain
 launchdman lets you build your configurations and manage(add, remove, group, etc) them on the fly.
 
 Inspired by schedule_ module.
-
+/var/folders/hb/cyzjyvfd3nj9y3h23ps8qb8r0000gn/T/com.evernote.Evernote/WebKitDnD.P3YnKG/扫描宝文档创建于2017年10月18日 下午1_01_36.png
 .. _schedule: https://github.com/dbader/schedule
 
 Features
@@ -46,8 +48,6 @@ Quick Start
 
 
 
-
-
 Documentation
 =============
 For documentation, check ReadTheDocs_
@@ -55,11 +55,14 @@ For documentation, check ReadTheDocs_
 .. _ReadTheDocs: http://launchdman.readthedocs.io/en/latest/
 
 
+
 Meta
 ====
 
 Yuan Fu <yuan.k.fu@gmail.com>
+
 Feel free to ask me if you have any questions.
+
 
 License
 =======
