@@ -1,4 +1,6 @@
 .. image:: icon.png
+   :height: 256px
+   :width: 256px
 
 launchdman
 ==========
