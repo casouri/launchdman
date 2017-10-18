@@ -1,6 +1,6 @@
 .. image:: icon.png
-   :height: 0.2
-   :width: 0.2
+   :height: 0.15
+   :width: 0.15
 
 launchdman
 ==========
