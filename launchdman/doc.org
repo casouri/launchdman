@@ -1,6 +1,7 @@
 This doc file is just for my development use. It is not complete and there may be some errors.
 *Don't reference this!*
-check out documentation paeg for reference.
+
+Check out documentation page for reference.
 
 * Abstract classes
 ** Single
