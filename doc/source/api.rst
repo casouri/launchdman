@@ -5,7 +5,7 @@ The launchdman API reference
 
 
 
-.. automodule:: launchdman.init
+.. automodule:: launchdman.__init__
    :members:
 
    :inherited-members:

@@ -8,6 +8,34 @@ launchdman lets you build your configurations and manage(add, remove, group, etc
 
 If you have any questions, feel free to ask me<yuan.k.fu@gmail.com> or submit issues on GitHub: https://github.com/casouri/launchdman
 
+Quick Start
+===========
+
+::
+
+    from launchdman import *
+
+::
+
+    # Label and Program are must-haves
+    job.add(launchdman.Label('job'), launchdman.Program('/usr/local/bin/job'))
+
+    # I want it to run at load
+    job.add(launcddman.RunAtLoad())
+
+    # write to plist
+    job.write()
+
+    # add a configuration
+    job.add(StartInterval().every(10).minute)
+
+    # remove a configuration
+    job.remove(RunAtLoad())
+
+
+
+
+
 Documentation
 =============
 For documentation, go to ReadTheDocs_

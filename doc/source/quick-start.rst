@@ -43,7 +43,7 @@ Add some configurations to that job::
   # Label and Program are must-haves
   job.add(launchdman.Label('job'), launchdman.Program('/usr/local/bin/job'))
 
-  # I want it run at load
+  # I want it to run at load
   job.add(launcddman.RunAtLoad())
 
 Create a bunch of configurations and group them into lists::
