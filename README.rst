@@ -11,6 +11,7 @@ If you want to schedule to run certain tasks or programs, or run them in certain
 launchdman lets you build your configurations and manage(add, remove, group, etc) them on the fly.
 
 Inspired by schedule_ module.
+
 .. _schedule: https://github.com/dbader/schedule
 
 Features
