@@ -40,6 +40,6 @@ Quick Start
 
 Documentation
 =============
-For documentation, go to ReadTheDocs_
+For documentation, check ReadTheDocs_
 
 .. _ReadTheDocs: http://launchdman.readthedocs.io/en/latest/

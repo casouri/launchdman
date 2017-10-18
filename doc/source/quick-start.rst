@@ -89,65 +89,65 @@ If you have loaded the plist but modified it and want to load it again. You need
 For more information, go back to launchd-tutorial_ for the Operation tab.
 
 
-All the configurations
-----------------------
+Available Configurations
+------------------------
 
 
-:py:class:`launchdman.__init__.Label`
+:py:class:`Label <launchdman.__init__.Label>`
 
-:py:class:`launchdman.__init__.Program`
+:py:class:`Program <launchdman.__init__.Program>`
 
-:py:class:`launchdman.__init__.ProgramArguments`
+:py:class:`ProgramArguments <launchdman.__init__.ProgramArguments>`
 
-:py:class:`launchdman.__init__.EnvironmentVariables`
+:py:class:`EnvironmentVariables <launchdman.__init__.EnvironmentVariables>`
 
-:py:class:`launchdman.__init__.StandardInPath`
+:py:class:`StandardInPath <launchdman.__init__.StandardInPath>`
 
-:py:class:`launchdman.__init__.StandardOutPath`
+:py:class:`StandardOutPath <launchdman.__init__.StandardOutPath>`
 
-:py:class:`launchdman.__init__.StandardErrorPath`
+:py:class:`StandardErrorPath <launchdman.__init__.StandardErrorPath>`
 
-:py:class:`launchdman.__init__.WorkingDirectory`
+:py:class:`WorkingDirectory <launchdman.__init__.WorkingDirectory>`
 
-:py:class:`launchdman.__init__.SoftResourceLimit`
+:py:class:`SoftResourceLimit <launchdman.__init__.SoftResourceLimit>`
 
-:py:class:`launchdman.__init__.HardResourceLimit`
+:py:class:`HardResourceLimit <launchdman.__init__.HardResourceLimit>`
 
-:py:class:`launchdman.__init__.RunAtLoad`
+:py:class:`RunAtLoad <launchdman.__init__.RunAtLoad>`
 
-:py:class:`launchdman.__init__.StartInterval`
+:py:class:`StartInterval <launchdman.__init__.StartInterval>`
 
-:py:class:`launchdman.__init__.StartCalendarInterval`
+:py:class:`StartCalendarInterval <launchdman.__init__.StartCalendarInterval>`
 
-:py:class:`launchdman.__init__.StartOnMount`
+:py:class:`StartOnMount <launchdman.__init__.StartOnMount>`
 
-:py:class:`launchdman.__init__.WatchPaths`
+:py:class:`WatchPaths <launchdman.__init__.WatchPaths>`
 
-:py:class:`launchdman.__init__.QueueDirecotries`
+:py:class:`QueueDirecotries <launchdman.__init__.QueueDirecotries>`
 
-:py:class:`launchdman.__init__.KeepAlive`
+:py:class:`KeepAlive <launchdman.__init__.KeepAlive>`
 
-:py:class:`launchdman.__init__.UserName`
+:py:class:`UserName <launchdman.__init__.UserName>`
 
-:py:class:`launchdman.__init__.GroupName`
+:py:class:`GroupName <launchdman.__init__.GroupName>`
 
-:py:class:`launchdman.__init__.InitGroups`
+:py:class:`InitGroups <launchdman.__init__.InitGroups>`
 
-:py:class:`launchdman.__init__.Umask`
+:py:class:`Umask <launchdman.__init__.Umask>`
 
-:py:class:`launchdman.__init__.RootDirecotry`
+:py:class:`RootDirecotry <launchdman.__init__.RootDirecotry>`
 
-:py:class:`launchdman.__init__.AbandonProcessGroup`
+:py:class:`AbandonProcessGroup <launchdman.__init__.AbandonProcessGroup>`
 
-:py:class:`launchdman.__init__.ExitTimeOut`
+:py:class:`ExitTimeOut <launchdman.__init__.ExitTimeOut>`
 
-:py:class:`launchdman.__init__.Timeout`
+:py:class:`Timeout <launchdman.__init__.Timeout>`
 
-:py:class:`launchdman.__init__.ThrottleInverval`
+:py:class:`ThrottleInverval <launchdman.__init__.ThrottleInverval>`
 
-:py:class:`launchdman.__init__.LegacyTimers`
+:py:class:`LegacyTimers <launchdman.__init__.LegacyTimers>`
 
-:py:class:`launchdman.__init__.Nice`
+:py:class:`Nice <launchdman.__init__.Nice>`
 
 
 
