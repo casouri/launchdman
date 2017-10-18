@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='launchdman',
-    version='0.1',
+    version='0.1.1',
     description='The launchd parser and manager for Python',
     url='https://github.com/casouri/launchdman',
     download_url='https://github.com/casouri/launchdman/archive/0.1.tar.gz',

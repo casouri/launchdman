@@ -8,3 +8,8 @@ test1.py
 
 doc/build
 
+build/
+
+launchdman.egg-info/
+
+dist

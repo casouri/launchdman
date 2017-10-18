@@ -888,6 +888,7 @@ class StartInterval(Pair):
         '''set unit to second'''
         self.magnification = 1
         self._update(self.baseNumber, self.magnification)
+        return self
 
     @property
     def minute(self):
