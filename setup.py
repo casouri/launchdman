@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='launchdman',
-    version='0.1.1',
+    version='0.1.2',
     description='The launchd parser and manager for Python',
     long_description=
     '''launchdman is a parser and manager for launchd, the service management framework used by macOS.
